@@ -1,0 +1,202 @@
+@import url('https://fonts.googleapis.com/css2?family=Benguiat&display=swap');
+
+.landing-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #000;
+  background-image: url('https://images.unsplash.com/photo-1518066000714-58c45f1a2c0a?q=80&w=2070&auto=format&fit=crop'); /* Dark misty forest */
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: multiply;
+  font-family: 'Courier New', Courier, monospace;
+  color: #c0c0c0;
+  overflow: hidden;
+}
+
+.landing-content {
+  display: flex;
+  width: 90%;
+  max-width: 1200px;
+  height: 80vh;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid #333;
+  box-shadow: 0 0 20px rgba(200, 0, 0, 0.2);
+  backdrop-filter: blur(5px);
+}
+
+/* Login Section */
+.login-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  border-right: 1px solid #333;
+}
+
+.stranger-title {
+  font-family: 'ITC Benguiat', 'Benguiat', serif; /* Fallback to serif if Benguiat not avail */
+  font-size: 4rem;
+  color: #e71d36;
+  text-shadow: 0 0 10px #ff0000, 0 0 20px #8b0000;
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  /* Simulate the glow/outline style */
+  -webkit-text-stroke: 1px #8b0000;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+  color: #aaa;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.login-form {
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  width: 100%;
+}
+
+.stranger-input {
+  width: 100%;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid #555;
+  color: #fff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.stranger-input:focus {
+  border-color: #e71d36;
+  box-shadow: 0 0 10px rgba(231, 29, 54, 0.3);
+}
+
+.stranger-btn {
+  padding: 15px;
+  cursor: pointer;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.primary-btn {
+  background: #e71d36;
+  color: #000;
+  margin-top: 10px;
+}
+
+.primary-btn:hover {
+  background: #ff4d6d;
+  box-shadow: 0 0 15px rgba(231, 29, 54, 0.6);
+}
+
+.guest-btn {
+  margin-top: 20px;
+  background: transparent;
+  border: 1px solid #555;
+  color: #888;
+  width: 100%;
+  max-width: 350px;
+}
+
+.guest-btn:hover {
+  border-color: #fff;
+  color: #fff;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.error-message {
+  color: #ff4d6d;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Guestbook Section */
+.guestbook-section {
+  width: 300px;
+  padding: 30px;
+  background: rgba(10, 10, 10, 0.8);
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #333;
+}
+
+.guestbook-title {
+  font-family: 'Courier New', Courier, monospace;
+  color: #fff;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  text-align: center;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+}
+
+.guestbook-content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.guestbook-placeholder {
+  font-style: italic;
+  color: #555;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.guestbook-entry {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  border-bottom: 1px dashed #333;
+  padding-bottom: 5px;
+}
+
+.entry-name {
+  color: #e71d36;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.entry-msg {
+  color: #ccc;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .landing-content {
+    flex-direction: column;
+    height: auto;
+    min-height: 80vh;
+  }
+
+  .login-section {
+    border-right: none;
+    border-bottom: 1px solid #333;
+  }
+
+  .guestbook-section {
+    width: 100%;
+    border-left: none;
+    height: 300px;
+  }
+}

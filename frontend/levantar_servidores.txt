@@ -1,0 +1,6 @@
+cd c:\ultragen2026\ultragen_backend\django_app
+.\venv\Scripts\activate
+python manage.py runserver
+
+cd frontend
+npm run dev

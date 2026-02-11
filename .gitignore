@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Environment Variables
+.env
+.env.local
+.env.production
+
+# IDEs
+.vscode/
+.idea/
+
+# Media (Opcional, si son muchos archivos grandes)
+# Media (Opcional, si son muchos archivos grandes)
+media/
+
+# Scripts y Ejecutables (Seguridad)
+*.ps1
+*.bat
+backup_scripts/

@@ -1,0 +1,2219 @@
+openapi: 3.0.3
+info:
+  title: Ultragen API
+  version: 1.0.0
+  description: API backend para gestión de novelas
+paths:
+  /api/capitulo-imagenes/:
+    get:
+      operationId: capitulo_imagenes_list
+      parameters:
+      - in: query
+        name: capitulo
+        schema:
+          type: integer
+      tags:
+      - capitulo-imagenes
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CapituloImagen'
+          description: ''
+    post:
+      operationId: capitulo_imagenes_create
+      tags:
+      - capitulo-imagenes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CapituloImagen'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CapituloImagen'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CapituloImagen'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapituloImagen'
+          description: ''
+  /api/capitulo-imagenes/{id}/:
+    get:
+      operationId: capitulo_imagenes_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this capitulo imagen.
+        required: true
+      tags:
+      - capitulo-imagenes
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapituloImagen'
+          description: ''
+    put:
+      operationId: capitulo_imagenes_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this capitulo imagen.
+        required: true
+      tags:
+      - capitulo-imagenes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CapituloImagen'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CapituloImagen'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CapituloImagen'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapituloImagen'
+          description: ''
+    patch:
+      operationId: capitulo_imagenes_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this capitulo imagen.
+        required: true
+      tags:
+      - capitulo-imagenes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCapituloImagen'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCapituloImagen'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCapituloImagen'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapituloImagen'
+          description: ''
+    delete:
+      operationId: capitulo_imagenes_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this capitulo imagen.
+        required: true
+      tags:
+      - capitulo-imagenes
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/capitulo-pistas/:
+    get:
+      operationId: capitulo_pistas_list
+      parameters:
+      - in: query
+        name: capitulo
+        schema:
+          type: integer
+      tags:
+      - capitulo-pistas
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CapituloPista'
+          description: ''
+    post:
+      operationId: capitulo_pistas_create
+      tags:
+      - capitulo-pistas
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CapituloPista'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CapituloPista'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CapituloPista'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapituloPista'
+          description: ''
+  /api/capitulo-pistas/{id}/:
+    get:
+      operationId: capitulo_pistas_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this capitulo pista.
+        required: true
+      tags:
+      - capitulo-pistas
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapituloPista'
+          description: ''
+    put:
+      operationId: capitulo_pistas_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this capitulo pista.
+        required: true
+      tags:
+      - capitulo-pistas
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CapituloPista'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CapituloPista'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CapituloPista'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapituloPista'
+          description: ''
+    patch:
+      operationId: capitulo_pistas_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this capitulo pista.
+        required: true
+      tags:
+      - capitulo-pistas
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCapituloPista'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCapituloPista'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCapituloPista'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapituloPista'
+          description: ''
+    delete:
+      operationId: capitulo_pistas_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this capitulo pista.
+        required: true
+      tags:
+      - capitulo-pistas
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/capitulo-slaps/:
+    get:
+      operationId: capitulo_slaps_list
+      parameters:
+      - in: query
+        name: capitulo
+        schema:
+          type: integer
+      tags:
+      - capitulo-slaps
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CapituloSlap'
+          description: ''
+    post:
+      operationId: capitulo_slaps_create
+      tags:
+      - capitulo-slaps
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CapituloSlap'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CapituloSlap'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CapituloSlap'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapituloSlap'
+          description: ''
+  /api/capitulo-slaps/{id}/:
+    get:
+      operationId: capitulo_slaps_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this capitulo slap.
+        required: true
+      tags:
+      - capitulo-slaps
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapituloSlap'
+          description: ''
+    put:
+      operationId: capitulo_slaps_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this capitulo slap.
+        required: true
+      tags:
+      - capitulo-slaps
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CapituloSlap'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CapituloSlap'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CapituloSlap'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapituloSlap'
+          description: ''
+    patch:
+      operationId: capitulo_slaps_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this capitulo slap.
+        required: true
+      tags:
+      - capitulo-slaps
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCapituloSlap'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCapituloSlap'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCapituloSlap'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapituloSlap'
+          description: ''
+    delete:
+      operationId: capitulo_slaps_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this capitulo slap.
+        required: true
+      tags:
+      - capitulo-slaps
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/capitulos/:
+    get:
+      operationId: capitulos_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: tomo
+        schema:
+          type: integer
+      tags:
+      - capitulos
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Capitulo'
+          description: ''
+    post:
+      operationId: capitulos_create
+      tags:
+      - capitulos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Capitulo'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Capitulo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Capitulo'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Capitulo'
+          description: ''
+  /api/capitulos/{id}/:
+    get:
+      operationId: capitulos_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this capitulo.
+        required: true
+      tags:
+      - capitulos
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Capitulo'
+          description: ''
+    put:
+      operationId: capitulos_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this capitulo.
+        required: true
+      tags:
+      - capitulos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Capitulo'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Capitulo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Capitulo'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Capitulo'
+          description: ''
+    patch:
+      operationId: capitulos_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this capitulo.
+        required: true
+      tags:
+      - capitulos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCapitulo'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCapitulo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCapitulo'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Capitulo'
+          description: ''
+    delete:
+      operationId: capitulos_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this capitulo.
+        required: true
+      tags:
+      - capitulos
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/conversaciones/:
+    get:
+      operationId: conversaciones_list
+      tags:
+      - conversaciones
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conversacion'
+          description: ''
+    post:
+      operationId: conversaciones_create
+      tags:
+      - conversaciones
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conversacion'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Conversacion'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Conversacion'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conversacion'
+          description: ''
+  /api/conversaciones/{id}/:
+    get:
+      operationId: conversaciones_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this conversacion.
+        required: true
+      tags:
+      - conversaciones
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conversacion'
+          description: ''
+    put:
+      operationId: conversaciones_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this conversacion.
+        required: true
+      tags:
+      - conversaciones
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conversacion'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Conversacion'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Conversacion'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conversacion'
+          description: ''
+    patch:
+      operationId: conversaciones_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this conversacion.
+        required: true
+      tags:
+      - conversaciones
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedConversacion'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedConversacion'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedConversacion'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conversacion'
+          description: ''
+    delete:
+      operationId: conversaciones_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this conversacion.
+        required: true
+      tags:
+      - conversaciones
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/diarios/:
+    get:
+      operationId: diarios_list
+      tags:
+      - diarios
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Diario'
+          description: ''
+    post:
+      operationId: diarios_create
+      tags:
+      - diarios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Diario'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Diario'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Diario'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Diario'
+          description: ''
+  /api/diarios/{id}/:
+    get:
+      operationId: diarios_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this diario.
+        required: true
+      tags:
+      - diarios
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Diario'
+          description: ''
+    put:
+      operationId: diarios_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this diario.
+        required: true
+      tags:
+      - diarios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Diario'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Diario'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Diario'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Diario'
+          description: ''
+    patch:
+      operationId: diarios_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this diario.
+        required: true
+      tags:
+      - diarios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDiario'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDiario'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDiario'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Diario'
+          description: ''
+    delete:
+      operationId: diarios_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this diario.
+        required: true
+      tags:
+      - diarios
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/mensajes/:
+    get:
+      operationId: mensajes_list
+      parameters:
+      - in: query
+        name: conversacion
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: personaje
+        schema:
+          type: integer
+      tags:
+      - mensajes
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Mensaje'
+          description: ''
+    post:
+      operationId: mensajes_create
+      tags:
+      - mensajes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Mensaje'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Mensaje'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Mensaje'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensaje'
+          description: ''
+  /api/mensajes/{id}/:
+    get:
+      operationId: mensajes_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this mensaje.
+        required: true
+      tags:
+      - mensajes
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensaje'
+          description: ''
+    put:
+      operationId: mensajes_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this mensaje.
+        required: true
+      tags:
+      - mensajes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Mensaje'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Mensaje'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Mensaje'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensaje'
+          description: ''
+    patch:
+      operationId: mensajes_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this mensaje.
+        required: true
+      tags:
+      - mensajes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMensaje'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMensaje'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMensaje'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensaje'
+          description: ''
+    delete:
+      operationId: mensajes_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this mensaje.
+        required: true
+      tags:
+      - mensajes
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/personajes/:
+    get:
+      operationId: personajes_list
+      parameters:
+      - in: query
+        name: capitulo
+        schema:
+          type: integer
+      - in: query
+        name: diario
+        schema:
+          type: integer
+      - in: query
+        name: tomo
+        schema:
+          type: integer
+      tags:
+      - personajes
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Personaje'
+          description: ''
+    post:
+      operationId: personajes_create
+      tags:
+      - personajes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Personaje'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Personaje'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Personaje'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Personaje'
+          description: ''
+  /api/personajes/{id}/:
+    get:
+      operationId: personajes_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this personaje.
+        required: true
+      tags:
+      - personajes
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Personaje'
+          description: ''
+    put:
+      operationId: personajes_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this personaje.
+        required: true
+      tags:
+      - personajes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Personaje'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Personaje'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Personaje'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Personaje'
+          description: ''
+    patch:
+      operationId: personajes_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this personaje.
+        required: true
+      tags:
+      - personajes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPersonaje'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPersonaje'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPersonaje'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Personaje'
+          description: ''
+    delete:
+      operationId: personajes_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this personaje.
+        required: true
+      tags:
+      - personajes
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/tomos/:
+    get:
+      operationId: tomos_list
+      parameters:
+      - in: query
+        name: diario
+        schema:
+          type: integer
+      tags:
+      - tomos
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tomo'
+          description: ''
+    post:
+      operationId: tomos_create
+      tags:
+      - tomos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tomo'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Tomo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Tomo'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tomo'
+          description: ''
+  /api/tomos/{id}/:
+    get:
+      operationId: tomos_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this tomo.
+        required: true
+      tags:
+      - tomos
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tomo'
+          description: ''
+    put:
+      operationId: tomos_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this tomo.
+        required: true
+      tags:
+      - tomos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tomo'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Tomo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Tomo'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tomo'
+          description: ''
+    patch:
+      operationId: tomos_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this tomo.
+        required: true
+      tags:
+      - tomos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTomo'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTomo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTomo'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tomo'
+          description: ''
+    delete:
+      operationId: tomos_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this tomo.
+        required: true
+      tags:
+      - tomos
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    Capitulo:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        imagenes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapituloImagen'
+          readOnly: true
+        slaps:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapituloSlap'
+          readOnly: true
+        pistas:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapituloPista'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+        nombre:
+          type: string
+          maxLength: 255
+        sinopsis:
+          type: string
+          nullable: true
+        orden:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        contenido:
+          type: string
+          nullable: true
+        pais:
+          type: string
+          nullable: true
+          maxLength: 100
+        ciudad:
+          type: string
+          nullable: true
+          maxLength: 100
+        anio:
+          type: string
+          nullable: true
+          maxLength: 50
+        ruta_img:
+          type: string
+          format: uri
+          nullable: true
+        romance:
+          type: boolean
+        risas:
+          type: boolean
+        lagrimas:
+          type: boolean
+        violencia:
+          type: boolean
+        peligro:
+          type: boolean
+        armas:
+          type: boolean
+        sexo:
+          type: boolean
+        eventos:
+          type: boolean
+        tomo:
+          type: integer
+      required:
+      - created_at
+      - id
+      - imagenes
+      - nombre
+      - pistas
+      - slaps
+      - tomo
+      - updated_at
+    CapituloImagen:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+        ruta:
+          type: string
+          format: uri
+        tag:
+          type: string
+          maxLength: 100
+        capitulo:
+          type: integer
+      required:
+      - capitulo
+      - created_at
+      - id
+      - ruta
+      - tag
+      - updated_at
+    CapituloPista:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+        titulo:
+          type: string
+          nullable: true
+          maxLength: 255
+        contenido:
+          type: string
+        orden:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        capitulo:
+          type: integer
+      required:
+      - capitulo
+      - contenido
+      - created_at
+      - id
+      - updated_at
+    CapituloSlap:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+        ruta:
+          type: string
+          format: uri
+        nivel:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        capitulo:
+          type: integer
+      required:
+      - capitulo
+      - created_at
+      - id
+      - ruta
+      - updated_at
+    Conversacion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        personajes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Personaje'
+          readOnly: true
+        mensajes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mensaje'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+      required:
+      - created_at
+      - id
+      - mensajes
+      - personajes
+      - updated_at
+    Diario:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+        nombre:
+          type: string
+          maxLength: 255
+        sinopsis:
+          type: string
+          nullable: true
+        ruta_img:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - created_at
+      - id
+      - nombre
+      - updated_at
+    Mensaje:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        personaje_nombre:
+          type: string
+          readOnly: true
+        personaje_img:
+          type: string
+          format: uri
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+        mensaje:
+          type: string
+          nullable: true
+        ruta_img:
+          type: string
+          format: uri
+          nullable: true
+        fecha:
+          type: string
+          format: date-time
+          nullable: true
+        fecha_simulada:
+          type: string
+          format: date
+          nullable: true
+        hora_simulada:
+          type: string
+          format: time
+          nullable: true
+        orden:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        conversacion:
+          type: integer
+        personaje:
+          type: integer
+      required:
+      - conversacion
+      - created_at
+      - id
+      - personaje
+      - personaje_img
+      - personaje_nombre
+      - updated_at
+    PatchedCapitulo:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        imagenes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapituloImagen'
+          readOnly: true
+        slaps:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapituloSlap'
+          readOnly: true
+        pistas:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapituloPista'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+        nombre:
+          type: string
+          maxLength: 255
+        sinopsis:
+          type: string
+          nullable: true
+        orden:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        contenido:
+          type: string
+          nullable: true
+        pais:
+          type: string
+          nullable: true
+          maxLength: 100
+        ciudad:
+          type: string
+          nullable: true
+          maxLength: 100
+        anio:
+          type: string
+          nullable: true
+          maxLength: 50
+        ruta_img:
+          type: string
+          format: uri
+          nullable: true
+        romance:
+          type: boolean
+        risas:
+          type: boolean
+        lagrimas:
+          type: boolean
+        violencia:
+          type: boolean
+        peligro:
+          type: boolean
+        armas:
+          type: boolean
+        sexo:
+          type: boolean
+        eventos:
+          type: boolean
+        tomo:
+          type: integer
+    PatchedCapituloImagen:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+        ruta:
+          type: string
+          format: uri
+        tag:
+          type: string
+          maxLength: 100
+        capitulo:
+          type: integer
+    PatchedCapituloPista:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+        titulo:
+          type: string
+          nullable: true
+          maxLength: 255
+        contenido:
+          type: string
+        orden:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        capitulo:
+          type: integer
+    PatchedCapituloSlap:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+        ruta:
+          type: string
+          format: uri
+        nivel:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        capitulo:
+          type: integer
+    PatchedConversacion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        personajes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Personaje'
+          readOnly: true
+        mensajes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mensaje'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+    PatchedDiario:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+        nombre:
+          type: string
+          maxLength: 255
+        sinopsis:
+          type: string
+          nullable: true
+        ruta_img:
+          type: string
+          format: uri
+          nullable: true
+    PatchedMensaje:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        personaje_nombre:
+          type: string
+          readOnly: true
+        personaje_img:
+          type: string
+          format: uri
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+        mensaje:
+          type: string
+          nullable: true
+        ruta_img:
+          type: string
+          format: uri
+          nullable: true
+        fecha:
+          type: string
+          format: date-time
+          nullable: true
+        fecha_simulada:
+          type: string
+          format: date
+          nullable: true
+        hora_simulada:
+          type: string
+          format: time
+          nullable: true
+        orden:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        conversacion:
+          type: integer
+        personaje:
+          type: integer
+    PatchedPersonaje:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+        nombre:
+          type: string
+          maxLength: 255
+        descripcion:
+          type: string
+          nullable: true
+        ruta_img:
+          type: string
+          format: uri
+          nullable: true
+        prioridad:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        diario:
+          type: integer
+        tomo:
+          type: integer
+          nullable: true
+        capitulo:
+          type: integer
+          nullable: true
+    PatchedTomo:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+        nombre:
+          type: string
+          maxLength: 255
+        sinopsis:
+          type: string
+          nullable: true
+        ruta_img:
+          type: string
+          format: uri
+          nullable: true
+        diario:
+          type: integer
+    Personaje:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+        nombre:
+          type: string
+          maxLength: 255
+        descripcion:
+          type: string
+          nullable: true
+        ruta_img:
+          type: string
+          format: uri
+          nullable: true
+        prioridad:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        diario:
+          type: integer
+        tomo:
+          type: integer
+          nullable: true
+        capitulo:
+          type: integer
+          nullable: true
+      required:
+      - created_at
+      - diario
+      - id
+      - nombre
+      - updated_at
+    Tomo:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Fecha de creación del registro
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Última fecha de actualización
+        is_active:
+          type: boolean
+          description: Indica si el registro está activo (borrado lógico)
+        nombre:
+          type: string
+          maxLength: 255
+        sinopsis:
+          type: string
+          nullable: true
+        ruta_img:
+          type: string
+          format: uri
+          nullable: true
+        diario:
+          type: integer
+      required:
+      - created_at
+      - diario
+      - id
+      - nombre
+      - updated_at
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
