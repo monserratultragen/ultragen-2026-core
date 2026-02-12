@@ -7,11 +7,34 @@ import sys
 def main():
     """Run administrative tasks."""
     # If using python-dotenv for local dev
+    # If using python-dotenv for local dev
     try:
-        import dotenv
-        dotenv.load_dotenv()
+        from dotenv import load_dotenv
+        # Force load .env from the same directory as manage.py
+        env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+        if os.path.exists(env_path):
+            load_dotenv(env_path)
+        else:
+            print(f"Advertencia: No se encontro archivo .env en {env_path}")
     except ImportError:
-        pass
+        # Fallback: Manual parsing if python-dotenv is not installed
+        env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+        if os.path.exists(env_path):
+            try:
+                with open(env_path, 'r') as f:
+                    for line in f:
+                        line = line.strip()
+                        if not line or line.startswith('#'):
+                            continue
+                        if '=' in line:
+                            key, value = line.split('=', 1)
+                            # Remove quotes if present
+                            value = value.strip().strip("'").strip('"')
+                            os.environ.setdefault(key.strip(), value)
+            except Exception as e:
+                print(f"Error reading .env manually: {e}")
+        else:
+             print(f"Advertencia: No se encontro archivo .env en {env_path}")
 
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ultragen_backend.settings')
     try:

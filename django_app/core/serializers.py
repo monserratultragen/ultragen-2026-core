@@ -7,10 +7,7 @@ from .models import (
     MercadoUmbralHumanoImagen, Bienvenida, LibroVisitas, Seguridad, Desktop, Susurro
 )
 
-class DiarioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Diario
-        fields = '__all__'
+
 
 
 
@@ -29,10 +26,7 @@ class SusurroSerializer(serializers.ModelSerializer):
         model = Susurro
         fields = '__all__'
 
-class TomoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tomo
-        fields = '__all__'
+
 
 class CapituloImagenSerializer(serializers.ModelSerializer):
     class Meta:
@@ -62,6 +56,20 @@ class CapituloSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Capitulo
+        fields = '__all__'
+
+class TomoSerializer(serializers.ModelSerializer):
+    capitulos = CapituloSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Tomo
+        fields = '__all__'
+
+class DiarioSerializer(serializers.ModelSerializer):
+    tomos = TomoSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Diario
         fields = '__all__'
 
 class PersonajeSerializer(serializers.ModelSerializer):
