@@ -161,7 +161,7 @@ cloudinary.config(
 )
 
 MEDIA_URL = '/media/'  # Public URL at the browser
-MEDIA_URL = '/media/'  # Public URL at the browser
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 STORAGES = {
     "default": {
