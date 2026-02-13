@@ -72,9 +72,27 @@ function CapituloWriter() {
     };
 
     const handleSave = () => {
+        const originalText = "Guardar";
+        const btn = document.querySelector('.writer-actions .btn-primary');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerText = "Guardando...";
+        }
+
         api.patch(`/capitulos/${id}/`, { contenido })
-            .then(() => alert('Guardado correctamente'))
-            .catch(err => console.error(err));
+            .then(() => {
+                alert('Guardado correctamente');
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Error al guardar: ' + (err.response?.data?.detail || err.message));
+            })
+            .finally(() => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                }
+            });
     };
 
     const handleImageUpload = (e) => {

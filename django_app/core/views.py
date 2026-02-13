@@ -35,8 +35,6 @@ class DesktopViewSet(viewsets.ModelViewSet):
 class SusurroViewSet(viewsets.ModelViewSet):
     queryset = Susurro.objects.all()
     serializer_class = SusurroSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.OrderingFilter]
     ordering_fields = ['seccion', 'id']
 
     def get_queryset(self):
@@ -58,7 +56,6 @@ class TomoViewSet(viewsets.ModelViewSet):
 class CapituloViewSet(viewsets.ModelViewSet):
     queryset = Capitulo.objects.all()
     serializer_class = CapituloSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ['tomo', 'es_demo']
     ordering_fields = ['orden', 'id']
@@ -182,7 +179,6 @@ class MercadoUmbralNoticiaViewSet(viewsets.ModelViewSet):
 class MercadoUmbralCompraViewSet(viewsets.ModelViewSet):
     queryset = MercadoUmbralCompra.objects.all()
     serializer_class = MercadoUmbralCompraSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['fecha', 'id']
     
@@ -195,7 +191,6 @@ class MercadoUmbralCompraViewSet(viewsets.ModelViewSet):
 class MercadoUmbralCyborgViewSet(viewsets.ModelViewSet):
     queryset = MercadoUmbralCyborg.objects.all()
     serializer_class = MercadoUmbralCyborgSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['nombre', 'id']
 
@@ -208,7 +203,6 @@ class MercadoUmbralCyborgViewSet(viewsets.ModelViewSet):
 class MercadoUmbralHumanoViewSet(viewsets.ModelViewSet):
     queryset = MercadoUmbralHumano.objects.all()
     serializer_class = MercadoUmbralHumanoSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['nombre', 'id']
 
@@ -398,3 +392,42 @@ class DashboardStatsViewSet(viewsets.ViewSet):
             }
         }
         return Response(data)
+
+from django.http import HttpResponse
+from django.conf import settings
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAdminUser
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def debug_storage_view(request):
+    lines = []
+    lines.append("--- DIAGNOSTICO DE PRODUCCION ---")
+    lines.append(f"DEBUG: {settings.DEBUG}")
+    lines.append(f"DEFAULT_FILE_STORAGE: {getattr(settings, 'DEFAULT_FILE_STORAGE', 'No definido')}")
+    try:
+        lines.append(f"STORAGES: {settings.STORAGES}")
+    except AttributeError:
+        lines.append("STORAGES: No definido")
+    
+    lines.append(f"Storage Activo: {default_storage.__class__.__name__}")
+    
+    # Test upload
+    try:
+        filename = 'cloud_test_web.txt'
+        if default_storage.exists(filename):
+            default_storage.delete(filename)
+        path = default_storage.save(filename, ContentFile(b'verificacion web'))
+        url = default_storage.url(path)
+        lines.append(f"Prueba de subida exitosa. URL: {url}")
+        
+        if 'cloudinary' in url:
+            lines.append(">>> RESULTADO: CLOUDINARY ACTIVADO.")
+        else:
+            lines.append(">>> RESULTADO: ALERTA - ALMACENAMIENTO LOCAL.")
+    except Exception as e:
+        lines.append(f"Error subida: {str(e)}")
+        
+    return HttpResponse("\n".join(lines), content_type="text/plain")

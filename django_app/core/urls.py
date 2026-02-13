@@ -9,7 +9,8 @@ from .views import (
     InstagramPerfilViewSet, InstagramPostViewSet,
     MercadoUmbralNoticiaViewSet, MercadoUmbralCompraViewSet,
     MercadoUmbralCyborgViewSet, MercadoUmbralHumanoViewSet,
-    MercadoUmbralHumanoImagenViewSet, BienvenidaViewSet, UniversalLoaderViewSet, LibroVisitasViewSet, SeguridadViewSet, DashboardStatsViewSet, DesktopViewSet, SusurroViewSet
+    MercadoUmbralHumanoImagenViewSet, BienvenidaViewSet, UniversalLoaderViewSet, LibroVisitasViewSet, SeguridadViewSet, DashboardStatsViewSet, DesktopViewSet, SusurroViewSet,
+    debug_storage_view
 )
 
 router = DefaultRouter()
