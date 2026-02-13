@@ -1,4 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
+import Editor from 'react-simple-code-editor';
+import { highlight, languages } from 'prismjs/components/prism-core';
+import 'prismjs/components/prism-clike';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/themes/prism-dark.css'; // Or any other theme
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import Modal from '../components/Modal';
@@ -221,15 +226,8 @@ function CapituloWriter() {
     };
 
     const insertImageTag = (ruta) => {
-        // Ensure we use a relative path or clean format if it's a full URL
-        let relativePath = ruta;
-        try {
-            const url = new URL(ruta);
-            relativePath = url.pathname;
-        } catch (e) {
-            // Not a full URL, keep as is
-        }
-        insertTag(`[img: ${relativePath}]`);
+        // Use raw path as requested
+        insertTag(`[img: ${ruta}]`);
     };
 
     const insertSlapTag = (ruta) => {
@@ -306,13 +304,34 @@ function CapituloWriter() {
             </div>
 
             <div className="writer-content-grid">
-                <div className="writer-editor-area">
-                    <textarea
-                        ref={textareaRef}
-                        className="editor-textarea"
+                <div className="writer-editor-area" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <Editor
                         value={contenido}
-                        onChange={e => setContenido(e.target.value)}
-                        placeholder="Escribe aquí el contenido del capítulo..."
+                        onValueChange={code => setContenido(code)}
+                        highlight={code => {
+                            // Simple regex highlight for [img: ...] and other tags
+                            // We escape HTML characters to prevent XSS/rendering issues first
+                            const escaped = code
+                                .replace(/&/g, "&amp;")
+                                .replace(/</g, "&lt;")
+                                .replace(/>/g, "&gt;");
+
+                            return escaped
+                                .replace(/(\[img:.*?\])/g, '<span style="color: #ffff00; text-shadow: 0 0 2px black;">$1</span>')
+                                .replace(/(\[slap:.*?\])/g, '<span style="color: #ffaa00;">$1</span>')
+                                .replace(/(\[pista:.*?\])/g, '<span style="color: #00ff00;">$1</span>');
+                        }}
+                        padding={10}
+                        textareaClassName="editor-textarea" // We might need to adjust CSS for this to overlay correctly
+                        style={{
+                            fontFamily: '"Fira code", "Fira Mono", monospace',
+                            fontSize: 14,
+                            backgroundColor: '#000000', // Ensure dark background
+                            color: '#e0e0e0',
+                            minHeight: '100%',
+                            flex: 1,
+                        }}
+                        ref={textareaRef} // Editor might not support ref exactly like textarea for selection, we need to handle insertTag differently
                     />
                 </div>
 
