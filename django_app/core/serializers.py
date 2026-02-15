@@ -53,7 +53,6 @@ class CapituloSerializer(serializers.ModelSerializer):
     diario_nombre = serializers.CharField(source='tomo.diario.nombre', read_only=True)
     diario_orden = serializers.IntegerField(source='tomo.diario.orden', read_only=True)
     diario_id = serializers.IntegerField(source='tomo.diario.id', read_only=True)
-    tomo_img = serializers.ImageField(source='tomo.ruta_img', read_only=True)
 
     class Meta:
         model = Capitulo
