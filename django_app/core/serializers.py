@@ -61,8 +61,9 @@ class CapituloSerializer(serializers.ModelSerializer):
 
     def get_ruta_img(self, obj):
         if obj.ruta_img:
-            return str(obj.ruta_img)
+            return obj.ruta_img.name  # 🔥 SOLO el public_id
         return None
+
 
 class TomoSerializer(serializers.ModelSerializer):
     capitulos = CapituloSerializer(many=True, read_only=True)
