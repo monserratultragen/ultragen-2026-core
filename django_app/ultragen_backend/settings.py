@@ -151,12 +151,16 @@ CLOUDINARY_STORAGE = {
     }
 }
 
+# Verificación de Producción (CRÍTICO para Render)
+if not DEBUG and not CLOUDINARY_STORAGE['CLOUD_NAME']:
+    print("WARNING: CLOUDINARY_CLOUD_NAME is missing in production! Images will fail.")
+
 # Configuración Global de Cloudinary (Optimización)
 import cloudinary
 cloudinary.config(
-    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
-    api_key=os.environ.get('CLOUDINARY_API_KEY', ''),
-    api_secret=os.environ.get('CLOUDINARY_API_SECRET', ''),
+    cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'],
+    api_key=CLOUDINARY_STORAGE['API_KEY'],
+    api_secret=CLOUDINARY_STORAGE['API_SECRET'],
     secure=True
 )
 

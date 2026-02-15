@@ -11,13 +11,27 @@ from .models import (
 class CloudinaryImageField(serializers.ImageField):
     """
     Custom field to ensure we always return the Cloudinary name (public_id)
-    instead of the absolute URL.
+    instead of the absolute URL. Also strips /media/ prefixes and absolute hosts.
     """
     def to_representation(self, value):
         if not value:
             return None
-        # Return only the name (e.g. 'ultragen_media/capitulos/...')
-        return value.name
+        
+        # Get the name/path (e.g. 'ultragen_media/capitulos/t1_xiqzet')
+        # We handle both FieldFile objects and strings
+        name = getattr(value, 'name', str(value))
+        
+        # Robust check: if it contains /media/, strip it
+        if '/media/' in name:
+            name = name.split('/media/')[-1]
+        
+        # Extreme check: if it's still an absolute URL, take only the last parts
+        # If the name looks like http://.../ultragen_media/...
+        if '://' in name and 'ultragen_media/' in name:
+            name = name.split('ultragen_media/')[-1]
+            name = 'ultragen_media/' + name
+            
+        return name
 
 class BaseCloudinarySerializer(serializers.ModelSerializer):
     """
@@ -58,6 +72,9 @@ class CapituloPistaSerializer(BaseCloudinarySerializer):
         fields = '__all__'
 
 class CapituloSerializer(BaseCloudinarySerializer):
+    # EXPLICITLY define fields to ensure mapping doesn't skip them
+    ruta_img = CloudinaryImageField(required=False, allow_null=True)
+    
     imagenes = CapituloImagenSerializer(many=True, read_only=True)
     slaps = CapituloSlapSerializer(many=True, read_only=True)
     pistas = CapituloPistaSerializer(many=True, read_only=True)
