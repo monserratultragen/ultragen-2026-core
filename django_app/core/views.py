@@ -1,4 +1,7 @@
 from rest_framework import viewsets, filters, permissions
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
 from .models import (
@@ -25,6 +28,57 @@ class SeguridadViewSet(viewsets.ModelViewSet):
     serializer_class = SeguridadSerializer
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['id']
+
+    @action(detail=False, methods=['get'])
+    def random_challenge(self, request):
+        """Returns a random 'santo' (challenge) without the 'sena'."""
+        count = self.queryset.count()
+        if count == 0:
+            return Response({"error": "No challenges available"}, status=status.HTTP_404_NOT_FOUND)
+        
+        import random
+        random_index = random.randint(0, count - 1)
+        # Efficient random pick might be OrderBy('?') but for small tables this is fine
+        # Using index slicing if IDs are contiguous, but they might not be.
+        # Better: random choice from IDs
+        pks = self.queryset.values_list('pk', flat=True)
+        random_pk = random.choice(pks)
+        obj = self.queryset.get(pk=random_pk)
+        
+        return Response({
+            "id": obj.id,
+            "santo": obj.santo
+        })
+
+    @action(detail=True, methods=['post'])
+    def verify_response(self, request, pk=None):
+        """Verifies the 'sena' (response) for a given challenge ID."""
+        obj = self.get_object()
+        user_response = request.data.get('sena', '').strip()
+        
+        if not user_response:
+             return Response({"error": "Respuesta (sena) requerida"}, status=status.HTTP_400_BAD_REQUEST)
+
+        import unicodedata
+        import re
+
+        def normalize_text(text):
+            if not text: return ""
+            # Lowercase
+            text = text.lower()
+            # Remove accents
+            text = unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8")
+            # Remove non-alphanumeric (keep only letters and numbers)
+            text = re.sub(r'[^a-z0-9]', '', text)
+            return text
+
+        normalized_input = normalize_text(user_response)
+        normalized_stored = normalize_text(obj.sena)
+
+        if normalized_input == normalized_stored:
+            return Response({"status": "correct", "message": "Acceso concedido"})
+        else:
+            return Response({"status": "incorrect", "message": "Respuesta incorrecta"}, status=status.HTTP_403_FORBIDDEN)
 
 class DesktopViewSet(viewsets.ModelViewSet):
     queryset = Desktop.objects.all()

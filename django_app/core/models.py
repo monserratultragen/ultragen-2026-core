@@ -329,16 +329,19 @@ class Desktop(AuditModel):
 
 class Susurro(AuditModel):
     SECCION_CHOICES = [
+        ('desktop', 'Desktop'),
+        ('laptop', 'Laptop'),
+        ('movil', 'Móvil'),
+        ('diarios', 'Diarios'),
+        ('tablet', 'Tablet'),
+        ('mural', 'Mural'),
+        ('presentacion', 'Presentación'),
+        # Legacy/Other
         ('paginabase', 'Página Base'),
         ('autenticacion', 'Autenticación'),
         ('bienvenida', 'Bienvenida'),
-        ('desktop', 'Desktop'),
-        ('diarios', 'Diarios'),
-        ('movil', 'Móvil'),
         ('expedientes', 'Expedientes'),
-        ('tablet', 'Tablet'),
         ('pistas', 'Pistas'),
-        ('laptop', 'Laptop'),
         ('tomos', 'Tomos'),
         ('whatsapp', 'WhatsApp'),
         ('instagram', 'Instagram'),
@@ -347,7 +350,6 @@ class Susurro(AuditModel):
         ('ordenes', 'Órdenes'),
         ('humanas', 'Humanas'),
         ('linea_temporal', 'Línea Temporal'),
-        ('murales', 'Murales'),
     ]
     seccion = models.CharField(max_length=50, choices=SECCION_CHOICES)
     duracion = models.IntegerField(default=0)
