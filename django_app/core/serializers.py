@@ -53,10 +53,16 @@ class CapituloSerializer(serializers.ModelSerializer):
     diario_nombre = serializers.CharField(source='tomo.diario.nombre', read_only=True)
     diario_orden = serializers.IntegerField(source='tomo.diario.orden', read_only=True)
     diario_id = serializers.IntegerField(source='tomo.diario.id', read_only=True)
+    ruta_img = serializers.SerializerMethodField()
 
     class Meta:
         model = Capitulo
         fields = '__all__'
+
+    def get_ruta_img(self, obj):
+        if obj.ruta_img:
+            return str(obj.ruta_img)
+        return None
 
 class TomoSerializer(serializers.ModelSerializer):
     capitulos = CapituloSerializer(many=True, read_only=True)
