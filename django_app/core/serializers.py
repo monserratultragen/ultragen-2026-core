@@ -60,9 +60,32 @@ class CapituloSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_ruta_img(self, obj):
-        if obj.ruta_img:
-            return str(obj.ruta_img)
-        return None
+        if not obj.ruta_img:
+            return None
+        url = str(obj.ruta_img)
+        
+        if url.startswith('http'):
+            return url
+            
+        # Custom Cloudinary path
+        if 'ultragen_media' in url:
+            # Ensure no double slashes if url starts with /
+            clean_path = url.lstrip('/')
+            return f"https://res.cloudinary.com/dxncjhrtt/image/upload/v1/{clean_path}"
+            
+        # Standard Cloudinary path (legacy)
+        if url.startswith('/dxncjhrtt/'):
+            return f"https://res.cloudinary.com{url}"
+            
+        # Standard storage or local file - generate absolute URL
+        request = self.context.get('request')
+        if request:
+            try:
+                return request.build_absolute_uri(obj.ruta_img.url)
+            except ValueError:
+                return url
+                
+        return obj.ruta_img.url
 
 class TomoSerializer(serializers.ModelSerializer):
     capitulos = CapituloSerializer(many=True, read_only=True)
