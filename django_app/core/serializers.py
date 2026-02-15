@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.db import models
 from .models import (
     Diario, Tomo, Capitulo, CapituloImagen, CapituloSlap, CapituloPista,
     Personaje, Conversacion, Mensaje, Expediente, ExpedienteImagen, SaludoEditora,
@@ -7,43 +8,56 @@ from .models import (
     MercadoUmbralHumanoImagen, Bienvenida, LibroVisitas, Seguridad, Desktop, Susurro
 )
 
+class CloudinaryImageField(serializers.ImageField):
+    """
+    Custom field to ensure we always return the Cloudinary name (public_id)
+    instead of the absolute URL.
+    """
+    def to_representation(self, value):
+        if not value:
+            return None
+        # Return only the name (e.g. 'ultragen_media/capitulos/...')
+        return value.name
 
+class BaseCloudinarySerializer(serializers.ModelSerializer):
+    """
+    Base serializer that automatically uses CloudinaryImageField 
+    for all ImageField models in the project.
+    """
+    serializer_field_mapping = serializers.ModelSerializer.serializer_field_mapping.copy()
+    serializer_field_mapping[models.ImageField] = CloudinaryImageField
 
-
-
-class SeguridadSerializer(serializers.ModelSerializer):
+class SeguridadSerializer(BaseCloudinarySerializer):
     class Meta:
         model = Seguridad
         fields = '__all__'
 
-class DesktopSerializer(serializers.ModelSerializer):
+class DesktopSerializer(BaseCloudinarySerializer):
     class Meta:
         model = Desktop
         fields = '__all__'
 
-class SusurroSerializer(serializers.ModelSerializer):
+class SusurroSerializer(BaseCloudinarySerializer):
     class Meta:
         model = Susurro
         fields = '__all__'
 
-
-
-class CapituloImagenSerializer(serializers.ModelSerializer):
+class CapituloImagenSerializer(BaseCloudinarySerializer):
     class Meta:
         model = CapituloImagen
         fields = '__all__'
 
-class CapituloSlapSerializer(serializers.ModelSerializer):
+class CapituloSlapSerializer(BaseCloudinarySerializer):
     class Meta:
         model = CapituloSlap
         fields = '__all__'
 
-class CapituloPistaSerializer(serializers.ModelSerializer):
+class CapituloPistaSerializer(BaseCloudinarySerializer):
     class Meta:
         model = CapituloPista
         fields = '__all__'
 
-class CapituloSerializer(serializers.ModelSerializer):
+class CapituloSerializer(BaseCloudinarySerializer):
     imagenes = CapituloImagenSerializer(many=True, read_only=True)
     slaps = CapituloSlapSerializer(many=True, read_only=True)
     pistas = CapituloPistaSerializer(many=True, read_only=True)
@@ -53,46 +67,45 @@ class CapituloSerializer(serializers.ModelSerializer):
     diario_nombre = serializers.CharField(source='tomo.diario.nombre', read_only=True)
     diario_orden = serializers.IntegerField(source='tomo.diario.orden', read_only=True)
     diario_id = serializers.IntegerField(source='tomo.diario.id', read_only=True)
-    ruta_img = serializers.SerializerMethodField()
 
     class Meta:
         model = Capitulo
         fields = '__all__'
 
-    def get_ruta_img(self, obj):
-        if obj.ruta_img:
-            return obj.ruta_img.name  # 🔥 SOLO el public_id
-        return None
-
-
-class TomoSerializer(serializers.ModelSerializer):
+class TomoSerializer(BaseCloudinarySerializer):
     capitulos = CapituloSerializer(many=True, read_only=True)
 
     class Meta:
         model = Tomo
         fields = '__all__'
 
-class DiarioSerializer(serializers.ModelSerializer):
+class DiarioSerializer(BaseCloudinarySerializer):
     tomos = TomoSerializer(many=True, read_only=True)
 
     class Meta:
         model = Diario
         fields = '__all__'
 
-class PersonajeSerializer(serializers.ModelSerializer):
+class PersonajeSerializer(BaseCloudinarySerializer):
     class Meta:
         model = Personaje
         fields = '__all__'
 
-class MensajeSerializer(serializers.ModelSerializer):
+class MensajeSerializer(BaseCloudinarySerializer):
     personaje_nombre = serializers.CharField(source='personaje.nombre', read_only=True)
-    personaje_img = serializers.ImageField(source='personaje.ruta_img', read_only=True)
+    # Ensure source field also uses the same logic
+    personaje_img = serializers.SerializerMethodField()
 
     class Meta:
         model = Mensaje
         fields = '__all__'
+    
+    def get_personaje_img(self, obj):
+        if obj.personaje and obj.personaje.ruta_img:
+            return obj.personaje.ruta_img.name
+        return None
 
-class ConversacionSerializer(serializers.ModelSerializer):
+class ConversacionSerializer(BaseCloudinarySerializer):
     personajes = PersonajeSerializer(many=True, read_only=True)
     mensajes = MensajeSerializer(many=True, read_only=True)
     last_message = serializers.SerializerMethodField()
@@ -107,90 +120,90 @@ class ConversacionSerializer(serializers.ModelSerializer):
             return MensajeSerializer(last_msg).data
         return None
 
-class ExpedienteImagenSerializer(serializers.ModelSerializer):
+class ExpedienteImagenSerializer(BaseCloudinarySerializer):
     class Meta:
         model = ExpedienteImagen
         fields = '__all__'
 
-class ExpedienteSerializer(serializers.ModelSerializer):
+class ExpedienteSerializer(BaseCloudinarySerializer):
     imagenes = ExpedienteImagenSerializer(many=True, read_only=True)
 
     class Meta:
         model = Expediente
         fields = '__all__'
 
-class SaludoEditoraSerializer(serializers.ModelSerializer):
+class SaludoEditoraSerializer(BaseCloudinarySerializer):
     class Meta:
         model = SaludoEditora
         fields = '__all__'
 
-class SlideSerializer(serializers.ModelSerializer):
+class SlideSerializer(BaseCloudinarySerializer):
     class Meta:
         model = Slide
         fields = '__all__'
 
-class PresentacionSerializer(serializers.ModelSerializer):
+class PresentacionSerializer(BaseCloudinarySerializer):
     slides = SlideSerializer(many=True, read_only=True)
 
     class Meta:
         model = Presentacion
         fields = '__all__'
 
-class TableroSerializer(serializers.ModelSerializer):
+class TableroSerializer(BaseCloudinarySerializer):
     class Meta:
         model = Tablero
         fields = '__all__'
 
-class RecuerdoLeticiaSerializer(serializers.ModelSerializer):
+class RecuerdoLeticiaSerializer(BaseCloudinarySerializer):
     class Meta:
         model = RecuerdoLeticia
         fields = '__all__'
 
-class InstagramPostSerializer(serializers.ModelSerializer):
+class InstagramPostSerializer(BaseCloudinarySerializer):
     class Meta:
         model = InstagramPost
         fields = '__all__'
 
-class InstagramPerfilSerializer(serializers.ModelSerializer):
+class InstagramPerfilSerializer(BaseCloudinarySerializer):
     posts = InstagramPostSerializer(many=True, read_only=True)
 
     class Meta:
         model = InstagramPerfil
         fields = '__all__'
 
-class MercadoUmbralNoticiaSerializer(serializers.ModelSerializer):
+class MercadoUmbralNoticiaSerializer(BaseCloudinarySerializer):
     class Meta:
         model = MercadoUmbralNoticia
         fields = '__all__'
 
-class MercadoUmbralCompraSerializer(serializers.ModelSerializer):
+class MercadoUmbralCompraSerializer(BaseCloudinarySerializer):
     class Meta:
         model = MercadoUmbralCompra
         fields = '__all__'
 
-class MercadoUmbralCyborgSerializer(serializers.ModelSerializer):
+class MercadoUmbralCyborgSerializer(BaseCloudinarySerializer):
     class Meta:
         model = MercadoUmbralCyborg
         fields = '__all__'
 
-class MercadoUmbralHumanoImagenSerializer(serializers.ModelSerializer):
+class MercadoUmbralHumanoImagenSerializer(BaseCloudinarySerializer):
     class Meta:
         model = MercadoUmbralHumanoImagen
         fields = '__all__'
 
-class MercadoUmbralHumanoSerializer(serializers.ModelSerializer):
+class MercadoUmbralHumanoSerializer(BaseCloudinarySerializer):
     imagenes = MercadoUmbralHumanoImagenSerializer(many=True, read_only=True)
 
     class Meta:
         model = MercadoUmbralHumano
         fields = '__all__'
 
-class BienvenidaSerializer(serializers.ModelSerializer):
+class BienvenidaSerializer(BaseCloudinarySerializer):
     class Meta:
         model = Bienvenida
         fields = '__all__'
 
-class LibroVisitasSerializer(serializers.ModelSerializer):
+class LibroVisitasSerializer(BaseCloudinarySerializer):
     class Meta:
         model = LibroVisitas
         fields = '__all__'
