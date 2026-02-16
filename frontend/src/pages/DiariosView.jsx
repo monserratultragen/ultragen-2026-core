@@ -19,21 +19,30 @@ function DiariosView() {
     const [diarios, setDiarios] = useState([]);
     const [tomos, setTomos] = useState([]);
     const [capitulos, setCapitulos] = useState([]);
+    const [personajes, setPersonajes] = useState([]);
+    const [loadingData, setLoadingData] = useState(true);
 
     useEffect(() => {
         fetchSidebarData();
     }, []);
 
     const fetchSidebarData = () => {
+        setLoadingData(true);
         Promise.all([
             api.get('/diarios/'),
             api.get('/tomos/'),
-            api.get('/capitulos/')
-        ]).then(([resDiarios, resTomos, resCapitulos]) => {
-            setDiarios(resDiarios.data.sort((a, b) => a.orden - b.orden));
-            setTomos(resTomos.data);
-            setCapitulos(resCapitulos.data);
-        }).catch(err => console.error("Error fetching sidebar data:", err));
+            api.get('/capitulos/'),
+            api.get('/personajes/')
+        ]).then(([resDiarios, resTomos, resCapitulos, resPersonajes]) => {
+            setDiarios(resDiarios.data.sort((a, b) => (a.orden - b.orden) || (b.id - a.id)));
+            setTomos(resTomos.data.sort((a, b) => (a.orden - b.orden) || (b.id - a.id)));
+            setCapitulos(resCapitulos.data.sort((a, b) => (a.orden - b.orden) || (b.id - a.id)));
+            setPersonajes(resPersonajes.data.sort((a, b) => b.id - a.id));
+            setLoadingData(false);
+        }).catch(err => {
+            console.error("Error fetching data:", err);
+            setLoadingData(false);
+        });
     };
 
     const handleDiarioSelect = (diarioId) => {
@@ -46,7 +55,7 @@ function DiariosView() {
         setSelectedTomoId(tomoId);
         setActiveTab('capitulos');
         // Find diario for this tomo to expand it
-        const tomo = tomos.find(t => t.id === tomoId);
+        const tomo = tomos.find(t => t.id == tomoId);
         if (tomo) {
             setExpandedDiarios(prev => ({ ...prev, [tomo.diario]: true }));
             setSelectedDiarioId(tomo.diario);
@@ -68,14 +77,14 @@ function DiariosView() {
         const items = [{ label: 'Diarios', tab: 'diarios', id: null }];
 
         if (selectedDiarioId) {
-            const diario = diarios.find(d => d.id === selectedDiarioId);
+            const diario = diarios.find(d => d.id == selectedDiarioId);
             if (diario) {
                 items.push({ label: diario.nombre, tab: 'tomos', id: diario.id });
             }
         }
 
         if (selectedTomoId) {
-            const tomo = tomos.find(t => t.id === selectedTomoId);
+            const tomo = tomos.find(t => t.id == selectedTomoId);
             if (tomo) {
                 items.push({ label: tomo.nombre, tab: 'capitulos', id: tomo.id });
             }
@@ -89,7 +98,6 @@ function DiariosView() {
             setSelectedDiarioId(null);
             setSelectedTomoId(null);
             setActiveTab('diarios');
-            setExpandedDiarios({}); // Optional: collapse all? Or keep expanded? User didn't specify.
         } else if (item.tab === 'tomos') {
             setSelectedTomoId(null);
             setActiveTab('tomos');
@@ -98,6 +106,10 @@ function DiariosView() {
         }
     };
 
+    if (loadingData && diarios.length === 0) {
+        return <div className="page-container" style={{ justifyContent: 'center', alignItems: 'center' }}>Cargando datos...</div>;
+    }
+
     return (
         <div className="page-container">
             {/* Persistent Sidebar - Hidden for Personajes */}
@@ -105,6 +117,7 @@ function DiariosView() {
                 <div className="sidebar">
                     <div className="sidebar-header">
                         <h3>Navegación</h3>
+                        {loadingData && <span style={{ fontSize: '0.7rem', color: '#ffaa00' }}>Actualizando...</span>}
                     </div>
                     <div className="sidebar-content">
                         {diarios.map(diario => {
@@ -115,7 +128,7 @@ function DiariosView() {
                             return (
                                 <div key={diario.id} className="nested-group">
                                     <div
-                                        className={`nested-header ${isExpanded ? 'expanded' : ''} ${selectedDiarioId === diario.id ? 'active-diario' : ''}`}
+                                        className={`nested-header ${isExpanded ? 'expanded' : ''} ${selectedDiarioId == diario.id ? 'active-diario' : ''}`}
                                         onClick={() => toggleDiario(diario.id)}
                                     >
                                         <span onClick={(e) => { e.stopPropagation(); handleDiarioSelect(diario.id); }}>
@@ -125,11 +138,11 @@ function DiariosView() {
                                     </div>
                                     <div className={`nested-items ${isExpanded ? 'show' : ''}`}>
                                         {diarioTomos.map(tomo => {
-                                            const capCount = capitulos.filter(c => c.tomo === tomo.id).length;
+                                            const capCount = capitulos.filter(c => c.tomo == tomo.id).length;
                                             return (
                                                 <div
                                                     key={tomo.id}
-                                                    className={`nested-item ${selectedTomoId === tomo.id ? 'active' : ''}`}
+                                                    className={`nested-item ${selectedTomoId == tomo.id ? 'active' : ''}`}
                                                     onClick={() => handleTomoSelect(tomo.id)}
                                                 >
                                                     <span>{tomo.nombre}</span>
@@ -191,18 +204,33 @@ function DiariosView() {
                 </div>
 
                 {activeTab === 'diarios' && (
-                    <DiariosList onDiarioSelect={handleDiarioSelect} />
+                    <DiariosList diarios={diarios} onRefresh={fetchSidebarData} onDiarioSelect={handleDiarioSelect} />
                 )}
                 {activeTab === 'tomos' && (
                     <TomosList
+                        diarios={diarios}
+                        tomos={tomos}
                         selectedDiarioId={selectedDiarioId}
                         onTomoSelect={handleTomoSelect}
+                        onRefresh={fetchSidebarData}
                     />
                 )}
                 {activeTab === 'capitulos' && (
-                    <CapitulosList selectedTomoId={selectedTomoId} />
+                    <CapitulosList
+                        diarios={diarios}
+                        tomos={tomos}
+                        capitulos={capitulos}
+                        selectedTomoId={selectedTomoId}
+                        onRefresh={fetchSidebarData}
+                    />
                 )}
-                {activeTab === 'personajes' && <PersonajesList />}
+                {activeTab === 'personajes' && (
+                    <PersonajesList
+                        diarios={diarios}
+                        personajes={personajes}
+                        onRefresh={fetchSidebarData}
+                    />
+                )}
             </div>
         </div>
     );

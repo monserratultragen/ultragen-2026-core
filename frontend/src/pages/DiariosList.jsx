@@ -1,37 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import api from '../services/api';
 import Modal from '../components/Modal';
+import { getImageUrl } from '../utils/imageUtils';
 
-function DiariosList({ onDiarioSelect }) {
-    const [diarios, setDiarios] = useState([]);
-    const [newDiario, setNewDiario] = useState({ nombre: '', sinopsis: '', orden: 0 });
+function DiariosList({ onDiarioSelect, onRefresh, diarios }) {
+    const [newDiario, setNewDiario] = useState({ nombre: '', sinopsis: '', orden: 0, is_active: true });
     const [imagen, setImagen] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
 
-    useEffect(() => {
-        fetchDiarios();
-    }, []);
-
-    const fetchDiarios = () => {
-        api.get('/diarios/')
-            .then(res => {
-                // Ensure sorted by orden
-                const sorted = res.data.sort((a, b) => a.orden - b.orden);
-                setDiarios(sorted);
-            })
-            .catch(err => console.error(err));
-    };
-
     const handleOpenModal = (diario = null) => {
         if (diario) {
             setEditingId(diario.id);
-            setNewDiario({ nombre: diario.nombre, sinopsis: diario.sinopsis, orden: diario.orden });
+            setNewDiario({ nombre: diario.nombre, sinopsis: diario.sinopsis, orden: diario.orden, is_active: diario.is_active });
         } else {
             setEditingId(null);
-            // Default orden to last + 1
-            const maxOrden = diarios.length > 0 ? Math.max(...diarios.map(d => d.orden)) : 0;
-            setNewDiario({ nombre: '', sinopsis: '', orden: maxOrden + 1 });
+            setNewDiario({ nombre: '', sinopsis: '', orden: maxOrden + 1, is_active: true });
         }
         setImagen(null);
         setIsModalOpen(true);
@@ -40,16 +24,17 @@ function DiariosList({ onDiarioSelect }) {
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setEditingId(null);
-        setNewDiario({ nombre: '', sinopsis: '', orden: 0 });
+        setNewDiario({ nombre: '', sinopsis: '', orden: 0, is_active: true });
         setImagen(null);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         const formData = new FormData();
-        formData.append('nombre', newDiario.nombre);
-        formData.append('sinopsis', newDiario.sinopsis);
-        formData.append('orden', newDiario.orden);
+        formData.append('nombre', newDiario.nombre || '');
+        formData.append('sinopsis', newDiario.sinopsis || '');
+        formData.append('orden', newDiario.orden || 0);
+        formData.append('is_active', newDiario.is_active);
         if (imagen) {
             formData.append('ruta_img', imagen);
         }
@@ -61,12 +46,16 @@ function DiariosList({ onDiarioSelect }) {
         request
             .then(() => {
                 handleCloseModal();
-                fetchDiarios();
+                if (onRefresh) onRefresh();
             })
-            .catch(err => console.error(err));
+            .catch(err => {
+                console.error(err);
+                alert("Error al guardar: " + (err.response?.data?.detail || err.message));
+            });
     };
 
     const handleReorder = (index, direction) => {
+        if (!diarios) return;
         if (direction === 'up' && index === 0) return;
         if (direction === 'down' && index === diarios.length - 1) return;
 
@@ -74,31 +63,21 @@ function DiariosList({ onDiarioSelect }) {
         const currentItem = diarios[index];
         const otherItem = diarios[otherIndex];
 
-        // Calculate new orden values
-        let newCurrentOrden = otherItem.orden;
-        let newOtherOrden = currentItem.orden;
+        let newCurrentOrden = otherItem.orden || 0;
+        let newOtherOrden = currentItem.orden || 0;
 
-        if (currentItem.orden === otherItem.orden) {
-            // Collision detected, fallback to index-based normalization
+        if (newCurrentOrden === newOtherOrden) {
             newCurrentOrden = otherIndex + 1;
             newOtherOrden = index + 1;
         }
 
-        // Optimistic update
-        const newDiarios = [...diarios];
-        newDiarios[index] = { ...currentItem, orden: newCurrentOrden };
-        newDiarios[otherIndex] = { ...otherItem, orden: newOtherOrden };
-        newDiarios.sort((a, b) => a.orden - b.orden);
-        setDiarios(newDiarios);
-
-        // API updates
         Promise.all([
             api.patch(`/diarios/${currentItem.id}/`, { orden: newCurrentOrden }),
             api.patch(`/diarios/${otherItem.id}/`, { orden: newOtherOrden })
-        ]).then(() => fetchDiarios())
+        ]).then(() => onRefresh && onRefresh())
             .catch(err => {
                 console.error(err);
-                fetchDiarios(); // Revert on error
+                if (onRefresh) onRefresh();
             });
     };
 
@@ -121,7 +100,7 @@ function DiariosList({ onDiarioSelect }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {diarios.map((diario, index) => (
+                        {diarios && diarios.map((diario, index) => (
                             <tr
                                 key={diario.id}
                                 onClick={() => onDiarioSelect && onDiarioSelect(diario.id)}
@@ -132,7 +111,7 @@ function DiariosList({ onDiarioSelect }) {
                                 <td>{diario.sinopsis}</td>
                                 <td>
                                     {diario.ruta_img && (
-                                        <img src={diario.ruta_img} alt={diario.nombre} style={{ height: '50px', borderRadius: '4px' }} />
+                                        <img src={getImageUrl(diario.ruta_img)} alt={diario.nombre} style={{ height: '50px', borderRadius: '4px' }} />
                                     )}
                                 </td>
                                 <td onClick={(e) => e.stopPropagation()}>
@@ -161,6 +140,13 @@ function DiariosList({ onDiarioSelect }) {
                                 </td>
                             </tr>
                         ))}
+                        {(!diarios || diarios.length === 0) && (
+                            <tr>
+                                <td colSpan="5" style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                                    No hay diarios registrados.
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -185,7 +171,7 @@ function DiariosList({ onDiarioSelect }) {
                             type="number"
                             placeholder="Orden"
                             value={newDiario.orden}
-                            onChange={e => setNewDiario({ ...newDiario, orden: parseInt(e.target.value) })}
+                            onChange={e => setNewDiario({ ...newDiario, orden: parseInt(e.target.value) || 0 })}
                         />
                     </div>
                     <div style={{ marginBottom: '10px' }}>
@@ -195,6 +181,16 @@ function DiariosList({ onDiarioSelect }) {
                             onChange={e => setNewDiario({ ...newDiario, sinopsis: e.target.value })}
                             rows="4"
                         />
+                    </div>
+                    <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <input
+                            type="checkbox"
+                            id="diario-active"
+                            checked={newDiario.is_active}
+                            onChange={e => setNewDiario({ ...newDiario, is_active: e.target.checked })}
+                            style={{ width: 'auto' }}
+                        />
+                        <label htmlFor="diario-active">Activo</label>
                     </div>
                     <div style={{ marginBottom: '10px' }}>
                         <label style={{ display: 'block', marginBottom: '5px' }}>Imagen de Portada:</label>

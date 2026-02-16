@@ -1,51 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import api from '../services/api';
 import Modal from '../components/Modal';
+import { getImageUrl } from '../utils/imageUtils';
 
-function TomosList({ selectedDiarioId, onTomoSelect }) {
-    const [tomos, setTomos] = useState([]);
-    const [diarios, setDiarios] = useState([]);
-    // const [selectedDiarioId, setSelectedDiarioId] = useState(null); // Managed by parent now
-    const [newTomo, setNewTomo] = useState({ nombre: '', sinopsis: '', diario: '', orden: 0 });
+function TomosList({ selectedDiarioId, onTomoSelect, onRefresh, tomos, diarios }) {
+    const [newTomo, setNewTomo] = useState({ nombre: '', sinopsis: '', diario: '', orden: 0, is_active: true });
     const [imagen, setImagen] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
 
-    useEffect(() => {
-        fetchTomos();
-        fetchDiarios();
-    }, []);
-
-    const fetchTomos = () => {
-        api.get('/tomos/')
-            .then(res => {
-                // Ensure sorted by orden
-                const sorted = res.data.sort((a, b) => a.orden - b.orden);
-                setTomos(sorted);
-            })
-            .catch(err => console.error(err));
-    };
-
-    const fetchDiarios = () => {
-        api.get('/diarios/')
-            .then(res => {
-                const sortedDiarios = res.data.sort((a, b) => a.orden - b.orden);
-                setDiarios(sortedDiarios);
-                // Parent handles selection
-            })
-            .catch(err => console.error(err));
-    };
 
     const handleOpenModal = (tomo = null) => {
         if (tomo) {
             setEditingId(tomo.id);
-            setNewTomo({ nombre: tomo.nombre, sinopsis: tomo.sinopsis, diario: tomo.diario, orden: tomo.orden });
+            setNewTomo({ nombre: tomo.nombre, sinopsis: tomo.sinopsis, diario: tomo.diario, orden: tomo.orden, is_active: tomo.is_active });
         } else {
             setEditingId(null);
             // Default orden to last + 1 in the selected diario
-            const tomosInDiario = tomos.filter(t => t.diario === selectedDiarioId);
-            const maxOrden = tomosInDiario.length > 0 ? Math.max(...tomosInDiario.map(t => t.orden)) : 0;
-            setNewTomo({ nombre: '', sinopsis: '', diario: selectedDiarioId || '', orden: maxOrden + 1 });
+            setNewTomo({ nombre: '', sinopsis: '', diario: selectedDiarioId || '', orden: maxOrden + 1, is_active: true });
         }
         setImagen(null);
         setIsModalOpen(true);
@@ -54,7 +26,7 @@ function TomosList({ selectedDiarioId, onTomoSelect }) {
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setEditingId(null);
-        setNewTomo({ nombre: '', sinopsis: '', diario: '', orden: 0 });
+        setNewTomo({ nombre: '', sinopsis: '', diario: '', orden: 0, is_active: true });
         setImagen(null);
     };
 
@@ -70,6 +42,7 @@ function TomosList({ selectedDiarioId, onTomoSelect }) {
         formData.append('sinopsis', newTomo.sinopsis);
         formData.append('diario', newTomo.diario);
         formData.append('orden', newTomo.orden);
+        formData.append('is_active', newTomo.is_active);
         if (imagen) {
             formData.append('ruta_img', imagen);
         }
@@ -81,14 +54,14 @@ function TomosList({ selectedDiarioId, onTomoSelect }) {
         request
             .then(() => {
                 handleCloseModal();
-                fetchTomos();
+                if (onRefresh) onRefresh();
             })
             .catch(err => console.error(err));
     };
 
     const handleReorder = (index, direction) => {
         // Reordering within the filtered list
-        const filteredTomos = tomos.filter(t => t.diario === selectedDiarioId);
+        const filteredTomos = tomos.filter(t => t.diario == selectedDiarioId);
 
         if (direction === 'up' && index === 0) return;
         if (direction === 'down' && index === filteredTomos.length - 1) return;
@@ -113,23 +86,22 @@ function TomosList({ selectedDiarioId, onTomoSelect }) {
             return t;
         });
         // Re-sort the whole list just in case, though we only care about the filtered view for display
-        newTomos.sort((a, b) => a.orden - b.orden);
-        setTomos(newTomos);
+        // Since we are moving to props, we'll let the parent handle the final state
 
         // API updates
         Promise.all([
             api.patch(`/tomos/${currentItem.id}/`, { orden: newCurrentOrden }),
             api.patch(`/tomos/${otherItem.id}/`, { orden: newOtherOrden })
-        ]).then(() => fetchTomos())
+        ]).then(() => onRefresh && onRefresh())
             .catch(err => {
                 console.error(err);
-                fetchTomos(); // Revert on error
+                if (onRefresh) onRefresh(); // Revert or refresh on error
             });
     };
 
     const filteredTomos = selectedDiarioId
-        ? tomos.filter(t => t.diario === selectedDiarioId)
-        : [];
+        ? tomos.filter(t => t.diario == selectedDiarioId)
+        : tomos;
 
     const getDiarioName = (id) => {
         const d = diarios.find(d => d.id === id);
@@ -151,6 +123,7 @@ function TomosList({ selectedDiarioId, onTomoSelect }) {
                         <thead>
                             <tr>
                                 <th style={{ width: '80px' }}>Orden</th>
+                                {!selectedDiarioId && <th>Diario</th>}
                                 <th>Nombre</th>
                                 <th>Sinopsis</th>
                                 <th>Imagen</th>
@@ -165,11 +138,12 @@ function TomosList({ selectedDiarioId, onTomoSelect }) {
                                     style={{ cursor: 'pointer' }}
                                 >
                                     <td style={{ textAlign: 'center' }}>{tomo.orden}</td>
+                                    {!selectedDiarioId && <td>{getDiarioName(tomo.diario)}</td>}
                                     <td>{tomo.nombre}</td>
                                     <td>{tomo.sinopsis}</td>
                                     <td>
                                         {tomo.ruta_img && (
-                                            <img src={tomo.ruta_img} alt={tomo.nombre} style={{ height: '50px', borderRadius: '4px' }} />
+                                            <img src={getImageUrl(tomo.ruta_img)} alt={tomo.nombre} style={{ height: '50px', borderRadius: '4px' }} />
                                         )}
                                     </td>
                                     <td onClick={(e) => e.stopPropagation()}>
@@ -201,7 +175,7 @@ function TomosList({ selectedDiarioId, onTomoSelect }) {
                             {filteredTomos.length === 0 && (
                                 <tr>
                                     <td colSpan="5" style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-                                        {selectedDiarioId ? "No hay tomos en este diario." : "Selecciona un diario para ver sus tomos."}
+                                        {selectedDiarioId ? "No hay tomos en este diario." : "No hay tomos registrados."}
                                     </td>
                                 </tr>
                             )}
@@ -246,6 +220,16 @@ function TomosList({ selectedDiarioId, onTomoSelect }) {
                         onChange={e => setNewTomo({ ...newTomo, sinopsis: e.target.value })}
                         rows="4"
                     />
+                    <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <input
+                            type="checkbox"
+                            id="tomo-active"
+                            checked={newTomo.is_active}
+                            onChange={e => setNewTomo({ ...newTomo, is_active: e.target.checked })}
+                            style={{ width: 'auto' }}
+                        />
+                        <label htmlFor="tomo-active">Activo</label>
+                    </div>
                     <div style={{ marginBottom: '10px' }}>
                         <label style={{ display: 'block', marginBottom: '5px' }}>Imagen de Portada:</label>
                         <input

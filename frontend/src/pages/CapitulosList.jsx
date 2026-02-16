@@ -1,52 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../services/api';
 import Modal from '../components/Modal';
+import { getImageUrl } from '../utils/imageUtils';
 
-function CapitulosList({ selectedTomoId }) {
+function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios }) {
     const navigate = useNavigate();
     const location = useLocation();
-    const [capitulos, setCapitulos] = useState([]);
-    const [tomos, setTomos] = useState([]);
-    const [diarios, setDiarios] = useState([]);
     const [newCapitulo, setNewCapitulo] = useState({
         nombre: '', sinopsis: '', tomo: '', orden: 0,
         contenido: '',
         pais: '', ciudad: '', anio: '',
         romance: false, risas: false, lagrimas: false, violencia: false,
-        peligro: false, armas: false, sexo: false, eventos: false
+        peligro: false, armas: false, sexo: false, eventos: false,
+        is_active: true
     });
     const [imagen, setImagen] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
 
-    useEffect(() => {
-        fetchCapitulos();
-        fetchTomos();
-        fetchDiarios();
-    }, []);
 
-    const fetchCapitulos = () => {
-        api.get('/capitulos/')
-            .then(res => {
-                // Sort by orden
-                const sorted = res.data.sort((a, b) => a.orden - b.orden);
-                setCapitulos(sorted);
-            })
-            .catch(err => console.error(err));
-    };
-
-    const fetchTomos = () => {
-        api.get('/tomos/')
-            .then(res => setTomos(res.data))
-            .catch(err => console.error(err));
-    };
-
-    const fetchDiarios = () => {
-        api.get('/diarios/')
-            .then(res => setDiarios(res.data))
-            .catch(err => console.error(err));
-    };
 
     const handleOpenModal = (cap = null) => {
         if (cap) {
@@ -56,12 +29,13 @@ function CapitulosList({ selectedTomoId }) {
                 contenido: cap.contenido || '',
                 pais: cap.pais || '', ciudad: cap.ciudad || '', anio: cap.anio || '',
                 romance: cap.romance, risas: cap.risas, lagrimas: cap.lagrimas, violencia: cap.violencia,
-                peligro: cap.peligro, armas: cap.armas, sexo: cap.sexo, eventos: cap.eventos
+                peligro: cap.peligro, armas: cap.armas, sexo: cap.sexo, eventos: cap.eventos,
+                is_active: cap.is_active
             });
         } else {
             setEditingId(null);
             // Default orden logic
-            const capsInTomo = capitulos.filter(c => c.tomo === selectedTomoId);
+            const capsInTomo = capitulos.filter(c => c.tomo == selectedTomoId);
             const maxOrden = capsInTomo.length > 0 ? Math.max(...capsInTomo.map(c => c.orden)) : 0;
 
             setNewCapitulo({
@@ -69,7 +43,8 @@ function CapitulosList({ selectedTomoId }) {
                 contenido: '',
                 pais: '', ciudad: '', anio: '',
                 romance: false, risas: false, lagrimas: false, violencia: false,
-                peligro: false, armas: false, sexo: false, eventos: false
+                peligro: false, armas: false, sexo: false, eventos: false,
+                is_active: true
             });
         }
         setImagen(null);
@@ -84,7 +59,8 @@ function CapitulosList({ selectedTomoId }) {
             contenido: '',
             pais: '', ciudad: '', anio: '',
             romance: false, risas: false, lagrimas: false, violencia: false,
-            peligro: false, armas: false, sexo: false, eventos: false
+            peligro: false, armas: false, sexo: false, eventos: false,
+            is_active: true
         });
         setImagen(null);
     };
@@ -111,7 +87,7 @@ function CapitulosList({ selectedTomoId }) {
         request
             .then(() => {
                 handleCloseModal();
-                fetchCapitulos();
+                if (onRefresh) onRefresh();
             })
             .catch(err => console.error(err));
     };
@@ -119,7 +95,7 @@ function CapitulosList({ selectedTomoId }) {
     const handleReorder = (index, direction) => {
         // Reordering within the filtered list
         const filteredCapitulos = selectedTomoId
-            ? capitulos.filter(c => c.tomo === selectedTomoId)
+            ? capitulos.filter(c => c.tomo == selectedTomoId)
             : [];
 
         if (direction === 'up' && index === 0) return;
@@ -144,34 +120,36 @@ function CapitulosList({ selectedTomoId }) {
             if (c.id === otherItem.id) return { ...c, orden: newOtherOrden };
             return c;
         });
-        newCapitulos.sort((a, b) => a.orden - b.orden);
-        setCapitulos(newCapitulos);
+        // since we use props, we rely on parent update
 
         // API updates
         Promise.all([
             api.patch(`/capitulos/${currentItem.id}/`, { orden: newCurrentOrden }),
             api.patch(`/capitulos/${otherItem.id}/`, { orden: newOtherOrden })
-        ]).then(() => fetchCapitulos())
+        ]).then(() => onRefresh && onRefresh())
             .catch(err => {
                 console.error(err);
-                fetchCapitulos(); // Revert on error
+                if (onRefresh) onRefresh();
             });
     };
 
     const getTomoLabel = (tomo) => {
-        const diario = diarios.find(d => d.id === tomo.diario);
+        const diario = diarios.find(d => d.id == tomo.diario);
         const diarioName = diario ? diario.nombre : 'Unknown';
         return `${diarioName} - ${tomo.nombre}`;
     };
 
     const getTomoName = (id) => {
-        const t = tomos.find(t => t.id === id);
-        return t ? t.nombre : id;
+        const t = tomos.find(t => t.id == id);
+        if (!t) return id || 'Sin Tomo';
+        const diario = diarios.find(d => d.id == t.diario);
+        const diarioPrefix = diario ? `${diario.nombre} - ` : '';
+        return `${diarioPrefix}${t.nombre}`;
     };
 
     const filteredCapitulos = selectedTomoId
-        ? capitulos.filter(c => c.tomo === selectedTomoId)
-        : [];
+        ? capitulos.filter(c => c.tomo == selectedTomoId)
+        : capitulos;
 
     return (
         <div style={{ width: '100%' }}>
@@ -185,6 +163,7 @@ function CapitulosList({ selectedTomoId }) {
                     <thead>
                         <tr>
                             <th style={{ width: '50px' }}>Ord</th>
+                            {!selectedTomoId && <th>Tomo</th>}
                             <th>Nombre</th>
                             <th>Sinopsis</th>
                             <th>Imagen</th>
@@ -212,13 +191,14 @@ function CapitulosList({ selectedTomoId }) {
                         {filteredCapitulos.map((cap, index) => (
                             <tr key={cap.id} onClick={() => navigate(`/writer/${cap.id}`)}>
                                 <td style={{ textAlign: 'center' }}>{cap.orden}</td>
+                                {!selectedTomoId && <td>{getTomoName(cap.tomo)}</td>}
                                 <td>{cap.nombre}</td>
                                 <td style={{ fontSize: '0.8rem', color: '#888' }}>
                                     {cap.sinopsis ? (cap.sinopsis.length > 50 ? cap.sinopsis.substring(0, 50) + '...' : cap.sinopsis) : '-'}
                                 </td>
                                 <td>
                                     {cap.ruta_img && (
-                                        <img src={cap.ruta_img} alt={cap.nombre} style={{ height: '50px', borderRadius: '4px' }} />
+                                        <img src={getImageUrl(cap.ruta_img)} alt={cap.nombre} style={{ height: '50px', borderRadius: '4px' }} />
                                     )}
                                 </td>
                                 <td style={{ fontSize: '0.8rem' }}>
@@ -269,7 +249,7 @@ function CapitulosList({ selectedTomoId }) {
                         {filteredCapitulos.length === 0 && (
                             <tr>
                                 <td colSpan="17" style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-                                    {selectedTomoId ? "No hay capítulos en este tomo." : "Selecciona un tomo para ver sus capítulos."}
+                                    {selectedTomoId ? "No hay capítulos en este tomo." : "No hay capítulos registrados."}
                                 </td>
                             </tr>
                         )}
@@ -343,6 +323,17 @@ function CapitulosList({ selectedTomoId }) {
                                 {tag}
                             </label>
                         ))}
+                    </div>
+
+                    <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <input
+                            type="checkbox"
+                            id="capitulo-active"
+                            checked={newCapitulo.is_active}
+                            onChange={e => setNewCapitulo({ ...newCapitulo, is_active: e.target.checked })}
+                            style={{ width: 'auto' }}
+                        />
+                        <label htmlFor="capitulo-active">Activo</label>
                     </div>
 
                     <div style={{ marginBottom: '10px' }}>

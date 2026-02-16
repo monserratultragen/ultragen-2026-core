@@ -7,6 +7,7 @@ import 'prismjs/themes/prism-dark.css'; // Or any other theme
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import Modal from '../components/Modal';
+import { getImageUrl } from '../utils/imageUtils';
 
 function CapituloWriter() {
     const { id } = useParams();
@@ -17,8 +18,11 @@ function CapituloWriter() {
     const [slaps, setSlaps] = useState([]);
     const [pistas, setPistas] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
+    const [isUploadingSlap, setIsUploadingSlap] = useState(false);
     const textareaRef = useRef(null);
-
+    // ... existing states ...
     const [activeTab, setActiveTab] = useState('imagenes'); // 'imagenes', 'slaps', 'pistas'
     const [viewImage, setViewImage] = useState(null);
     const [editingImage, setEditingImage] = useState(null);
@@ -77,12 +81,8 @@ function CapituloWriter() {
     };
 
     const handleSave = () => {
-        const originalText = "Guardar";
-        const btn = document.querySelector('.writer-actions .btn-primary');
-        if (btn) {
-            btn.disabled = true;
-            btn.innerText = "Guardando...";
-        }
+        if (isSaving) return;
+        setIsSaving(true);
 
         api.patch(`/capitulos/${id}/`, { contenido })
             .then(() => {
@@ -93,17 +93,15 @@ function CapituloWriter() {
                 alert('Error al guardar: ' + (err.response?.data?.detail || err.message));
             })
             .finally(() => {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerText = originalText;
-                }
+                setIsSaving(false);
             });
     };
 
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
-        if (!file) return;
+        if (!file || isUploadingImage) return;
 
+        setIsUploadingImage(true);
         const formData = new FormData();
         formData.append('capitulo', id);
         formData.append('ruta', file);
@@ -114,14 +112,15 @@ function CapituloWriter() {
             .then(res => {
                 const newImage = res.data;
                 setImagenes(prev => [...prev, newImage]);
-                // Auto-insert removed as per request
-                // insertImageTag(newImage.ruta);
                 // Clear input
                 e.target.value = null;
             })
             .catch(err => {
                 console.error("Upload failed", err);
                 alert("Error al subir imagen: " + (err.response?.data?.detail || err.message));
+            })
+            .finally(() => {
+                setIsUploadingImage(false);
             });
     };
 
@@ -148,8 +147,9 @@ function CapituloWriter() {
     };
 
     const confirmSlapUpload = () => {
-        if (!pendingSlapFile) return;
+        if (!pendingSlapFile || isUploadingSlap) return;
 
+        setIsUploadingSlap(true);
         const formData = new FormData();
         formData.append('capitulo', id);
         formData.append('ruta', pendingSlapFile);
@@ -163,6 +163,9 @@ function CapituloWriter() {
             .catch(err => {
                 console.error("Upload failed", err);
                 alert("Error al subir slap");
+            })
+            .finally(() => {
+                setIsUploadingSlap(false);
             });
     };
 
@@ -226,16 +229,26 @@ function CapituloWriter() {
     };
 
     const insertImageTag = (ruta) => {
-        // Use raw path as requested
-        insertTag(`[img: ${ruta}]`);
+        // En el manager, 'ruta' ya viene limpio del backend (gracias al serializer)
+        // Pero por si acaso, nos aseguramos de que sea relativo para evitar URLs absolutas en el contenido
+        let relativePath = ruta;
+        if (ruta.includes('ultragen_media/')) {
+            relativePath = 'ultragen_media/' + ruta.split('ultragen_media/').pop();
+        } else if (ruta.includes('/media/')) {
+            relativePath = ruta.split('/media/').pop();
+        }
+        insertTag(`[img: ${relativePath}]`);
     };
 
     const insertSlapTag = (ruta) => {
+        // En el manager, 'ruta' ya viene limpio del backend (gracias al serializer)
+        // Pero por si acaso, nos aseguramos de que sea relativo
         let relativePath = ruta;
-        try {
-            const url = new URL(ruta);
-            relativePath = url.pathname;
-        } catch (e) { }
+        if (ruta.includes('ultragen_media/')) {
+            relativePath = 'ultragen_media/' + ruta.split('ultragen_media/').pop();
+        } else if (ruta.includes('/media/')) {
+            relativePath = ruta.split('/media/').pop();
+        }
         insertTag(`[slap: ${relativePath}]`);
     };
 
@@ -284,14 +297,13 @@ function CapituloWriter() {
                     </h2>
                 </div>
                 <div className="writer-tools">
-                    <label className="btn btn-sm btn-outline">
-                        📷 Subir Imagen
-                        <input type="file" hidden onChange={handleImageUpload} accept="image/*" />
+                    <label className={`btn btn-sm ${isUploadingImage ? 'btn-disabled' : 'btn-outline'}`} style={{ cursor: isUploadingImage ? 'not-allowed' : 'pointer' }}>
+                        {isUploadingImage ? '⌛ Subiendo...' : '📷 Subir Imagen'}
+                        <input type="file" hidden onChange={handleImageUpload} accept="image/*" disabled={isUploadingImage} />
                     </label>
-                    {/* Add more tools here */}
                 </div>
                 <div className="writer-actions">
-                    <button className="btn btn-secondary" onClick={() => navigate('/diarios-main', {
+                    <button className="btn btn-secondary" disabled={isSaving} onClick={() => navigate('/diarios-main', {
                         state: {
                             activeTab: 'capitulos',
                             selectedDiarioId: capitulo?.diario_id,
@@ -299,7 +311,9 @@ function CapituloWriter() {
                             expandedDiarios: { [capitulo?.diario_id]: true }
                         }
                     })}>Volver</button>
-                    <button className="btn btn-primary" onClick={handleSave} style={{ marginLeft: '10px' }}>Guardar</button>
+                    <button className="btn btn-primary" onClick={handleSave} disabled={isSaving} style={{ marginLeft: '10px' }}>
+                        {isSaving ? '⌛ Guardando...' : 'Guardar'}
+                    </button>
                 </div>
             </div>
 
@@ -363,7 +377,7 @@ function CapituloWriter() {
                             <div className="gallery-grid">
                                 {imagenes.map(img => (
                                     <div key={img.id} className={`gallery-item ${img.es_demo ? 'is-demo' : ''}`}>
-                                        <img src={img.ruta} alt={img.tag || 'Imagen'} />
+                                        <img src={getImageUrl(img.ruta)} alt={img.tag || 'Imagen'} />
                                         <div className="gallery-actions">
                                             <button
                                                 className="gallery-btn"
@@ -381,7 +395,7 @@ function CapituloWriter() {
                                             </button>
                                             <button
                                                 className="gallery-btn"
-                                                onClick={() => setViewImage(img.ruta)}
+                                                onClick={() => setViewImage(getImageUrl(img.ruta))}
                                                 title="Ver imagen"
                                             >
                                                 👁️
@@ -406,16 +420,16 @@ function CapituloWriter() {
                         <>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                                 <h3>Slaps</h3>
-                                <label className="btn btn-sm btn-outline">
-                                    + Subir
-                                    <input type="file" hidden onChange={handleSlapUpload} accept="image/*" />
+                                <label className={`btn btn-sm ${isUploadingSlap ? 'btn-disabled' : 'btn-outline'}`} style={{ cursor: isUploadingSlap ? 'not-allowed' : 'pointer' }}>
+                                    {isUploadingSlap ? '⌛...' : '+ Subir'}
+                                    <input type="file" hidden onChange={handleSlapUpload} accept="image/*" disabled={isUploadingSlap} />
                                 </label>
                             </div>
                             <div className="gallery-grid">
                                 {slaps.map(slap => (
                                     <div key={slap.id} className="gallery-item">
                                         <div className="slap-badge">Nivel: {slap.nivel}</div>
-                                        <img src={slap.ruta} alt={`Slap ${slap.nivel}`} />
+                                        <img src={getImageUrl(slap.ruta)} alt={`Slap ${slap.nivel}`} />
                                         <div className="gallery-actions">
                                             <button
                                                 className="gallery-btn"
@@ -433,7 +447,7 @@ function CapituloWriter() {
                                             </button>
                                             <button
                                                 className="gallery-btn"
-                                                onClick={() => setViewImage(slap.ruta)}
+                                                onClick={() => setViewImage(getImageUrl(slap.ruta))}
                                                 title="Ver"
                                             >
                                                 👁️
@@ -494,7 +508,7 @@ function CapituloWriter() {
             {viewImage && (
                 <div className="image-viewer-overlay" onClick={() => setViewImage(null)}>
                     <div className="image-viewer-content" onClick={e => e.stopPropagation()}>
-                        <img src={viewImage} alt="Vista previa" />
+                        <img src={viewImage} alt="Vista previa" style={{ maxWidth: '90vw', maxHeight: '80vh' }} />
                         <button className="close-viewer-btn" onClick={() => setViewImage(null)}>×</button>
                     </div>
                 </div>
@@ -561,8 +575,10 @@ function CapituloWriter() {
                     />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
-                    <button className="btn btn-secondary" onClick={() => setPendingSlapFile(null)}>Cancelar</button>
-                    <button className="btn btn-primary" onClick={confirmSlapUpload}>Subir</button>
+                    <button className="btn btn-secondary" disabled={isUploadingSlap} onClick={() => setPendingSlapFile(null)}>Cancelar</button>
+                    <button className="btn btn-primary" disabled={isUploadingSlap} onClick={confirmSlapUpload}>
+                        {isUploadingSlap ? 'Subiendo...' : 'Subir'}
+                    </button>
                 </div>
             </Modal>
 

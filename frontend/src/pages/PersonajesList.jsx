@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import api from '../services/api';
 import Modal from '../components/Modal';
+import { getImageUrl } from '../utils/imageUtils';
 
-function PersonajesList() {
-    const [personajes, setPersonajes] = useState([]);
-    const [diarios, setDiarios] = useState([]);
+function PersonajesList({ personajes, diarios, onRefresh }) {
     const [selectedDiarioId, setSelectedDiarioId] = useState(null);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,23 +15,6 @@ function PersonajesList() {
         prioridad: 0
     });
     const [imagen, setImagen] = useState(null);
-
-    useEffect(() => {
-        fetchDiarios();
-        fetchPersonajes();
-    }, []);
-
-    const fetchDiarios = () => {
-        api.get('/diarios/')
-            .then(res => setDiarios(res.data))
-            .catch(err => console.error(err));
-    };
-
-    const fetchPersonajes = () => {
-        api.get('/personajes/')
-            .then(res => setPersonajes(res.data))
-            .catch(err => console.error(err));
-    };
 
     const handleOpenModal = (p = null) => {
         if (p) {
@@ -79,7 +61,7 @@ function PersonajesList() {
         request
             .then(() => {
                 handleCloseModal();
-                fetchPersonajes();
+                if (onRefresh) onRefresh();
             })
             .catch(err => console.error(err));
     };
@@ -87,14 +69,17 @@ function PersonajesList() {
     const handleDelete = (id) => {
         if (window.confirm("¿Seguro que quieres eliminar este personaje?")) {
             api.delete(`/personajes/${id}/`)
-                .then(() => fetchPersonajes())
+                .then(() => {
+                    if (onRefresh) onRefresh();
+                })
                 .catch(err => console.error(err));
         }
     };
 
     const filteredPersonajes = selectedDiarioId
-        ? personajes.filter(p => p.diario === selectedDiarioId)
+        ? personajes.filter(p => p.diario == selectedDiarioId)
         : personajes;
+
 
     return (
         <div style={{ display: 'flex', width: '100%', height: 'calc(100vh - 100px)' }}>
@@ -112,7 +97,7 @@ function PersonajesList() {
                     {diarios.map(d => (
                         <div
                             key={d.id}
-                            className={`sidebar-item ${selectedDiarioId === d.id ? 'active' : ''}`}
+                            className={`sidebar-item ${selectedDiarioId == d.id ? 'active' : ''}`}
                             onClick={() => setSelectedDiarioId(d.id)}
                         >
                             {d.nombre}
@@ -132,8 +117,9 @@ function PersonajesList() {
                         <div key={p.id} className="card" style={{ padding: '0', overflow: 'hidden' }}>
                             <div style={{ height: '200px', backgroundColor: '#333', overflow: 'hidden' }}>
                                 {p.ruta_img ? (
-                                    <img src={p.ruta_img} alt={p.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    <img src={getImageUrl(p.ruta_img)} alt={p.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 ) : (
+
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#666' }}>
                                         Sin Imagen
                                     </div>
@@ -142,7 +128,7 @@ function PersonajesList() {
                             <div style={{ padding: '15px' }}>
                                 <h3 style={{ margin: '0 0 5px 0' }}>{p.nombre}</h3>
                                 <p style={{ fontSize: '0.8rem', color: '#aaa', marginBottom: '10px' }}>
-                                    {diarios.find(d => d.id === p.diario)?.nombre || 'Sin Diario'}
+                                    {diarios.find(d => d.id == p.diario)?.nombre || 'Sin Diario'}
                                 </p>
                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                     <button className="btn btn-sm btn-outline" onClick={() => handleOpenModal(p)}>Editar</button>
