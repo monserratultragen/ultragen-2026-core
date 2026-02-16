@@ -17,6 +17,8 @@ function TomosList({ selectedDiarioId, onTomoSelect, onRefresh, tomos, diarios }
         } else {
             setEditingId(null);
             // Default orden to last + 1 in the selected diario
+            const tomosInDiario = selectedDiarioId ? tomos.filter(t => t.diario == selectedDiarioId) : tomos;
+            const maxOrden = tomosInDiario.length > 0 ? Math.max(...tomosInDiario.map(t => t.orden || 0)) : 0;
             setNewTomo({ nombre: '', sinopsis: '', diario: selectedDiarioId || '', orden: maxOrden + 1, is_active: true });
         }
         setImagen(null);

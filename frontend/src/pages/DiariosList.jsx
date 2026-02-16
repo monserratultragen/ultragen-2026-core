@@ -15,6 +15,7 @@ function DiariosList({ onDiarioSelect, onRefresh, diarios }) {
             setNewDiario({ nombre: diario.nombre, sinopsis: diario.sinopsis, orden: diario.orden, is_active: diario.is_active });
         } else {
             setEditingId(null);
+            const maxOrden = diarios && diarios.length > 0 ? Math.max(...diarios.map(d => d.orden || 0)) : 0;
             setNewDiario({ nombre: '', sinopsis: '', orden: maxOrden + 1, is_active: true });
         }
         setImagen(null);
