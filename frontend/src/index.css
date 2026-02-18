@@ -8,6 +8,9 @@
   --glow-color: rgba(255, 0, 0, 0.3);
   --font-title: 'Libre Baskerville', serif;
   --font-body: 'Roboto', sans-serif;
+  --editor-font: 'Fira code', 'Fira Mono', monospace;
+  --editor-font-size: 14px;
+  --editor-line-height: 1.4;
 }
 
 body {
@@ -24,35 +27,37 @@ body {
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
+  scrollbar-color: rgba(180, 0, 0, 0.7) transparent;
 }
 
 *:hover {
-  scrollbar-color: rgba(180, 0, 0, 0.5) transparent;
+  scrollbar-color: rgba(180, 0, 0, 0.9) transparent;
 }
 
 /* Chrome, Edge, Safari */
 *::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 *::-webkit-scrollbar-track {
-  background: transparent;
+  background: #111;
+  /* Carril visible para orientación */
+  border-radius: 5px;
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: transparent;
+  background-color: rgba(180, 0, 0, 0.8) !important;
   border-radius: 4px;
 }
 
 *:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(180, 0, 0, 0.5);
+  background-color: rgba(220, 0, 0, 1) !important;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background-color: var(--accent-color);
-  box-shadow: 0 0 10px var(--glow-color);
+  background-color: #ff0000 !important;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
 }
 
 *::-webkit-scrollbar-corner {
@@ -275,20 +280,31 @@ td {
 .writer-container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 80px);
-  /* Full height minus navbar */
-  gap: 0;
+  height: calc(100vh - 100px);
+  /* Espacio para navbar + margen de App.jsx */
+  width: 100%;
   background-color: #0a0a0a;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Permitir que el contenedor de App.jsx se expanda al máximo */
+.full-width-page .container {
+  max-width: none !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .writer-top-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: 5px 20px;
   background-color: #111;
   border-bottom: 1px solid #333;
-  height: 60px;
+  height: 50px;
 }
 
 .writer-info h2 {
@@ -305,17 +321,43 @@ td {
 .writer-content-grid {
   display: grid;
   grid-template-columns: 1fr 300px;
-  /* Editor takes remaining space, Gallery fixed width */
   flex: 1;
+  min-height: 0;
+  height: 100%;
   overflow: hidden;
-  /* Prevent outer scroll */
 }
 
 .writer-editor-area {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  /* Cambio a horizontal para incluir números */
   border-right: 1px solid #333;
   background-color: #0a0a0a;
+  overflow: hidden;
+  /* El scroll lo maneja el textarea internamente */
+  height: 100%;
+  min-height: 0;
+  position: relative;
+}
+
+.line-numbers {
+  flex-shrink: 0;
+  width: 50px;
+  background-color: #050505;
+  color: #444;
+  font-family: var(--editor-font);
+  font-size: var(--editor-font-size);
+  line-height: var(--editor-line-height);
+  padding: 40px 0;
+  text-align: center;
+  overflow: hidden;
+  /* Sincronizado por JS */
+  border-right: 1px solid #222;
+  user-select: none;
+}
+
+.line-numbers div {
+  height: calc(var(--editor-font-size) * var(--editor-line-height));
 }
 
 /* Sidebar Layout */
@@ -454,17 +496,20 @@ td {
   flex: 1;
   width: 100%;
   height: 100%;
-  background-color: #0a0a0a;
+  background-color: #000;
   color: #e0e0e0;
-  border: none;
   padding: 40px;
-  /* More padding for writing focus */
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 1.2rem;
-  line-height: 1.8;
+  font-family: var(--editor-font);
+  font-size: var(--editor-font-size);
+  line-height: var(--editor-line-height);
+  border: none;
   resize: none;
   outline: none;
+  box-sizing: border-box;
   overflow-y: auto;
+  /* Scroll nativo */
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .writer-gallery-area {

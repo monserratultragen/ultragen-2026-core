@@ -1,9 +1,4 @@
 import { useEffect, useState, useRef } from 'react';
-import Editor from 'react-simple-code-editor';
-import { highlight, languages } from 'prismjs/components/prism-core';
-import 'prismjs/components/prism-clike';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/themes/prism-dark.css'; // Or any other theme
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import Modal from '../components/Modal';
@@ -22,6 +17,7 @@ function CapituloWriter() {
     const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [isUploadingSlap, setIsUploadingSlap] = useState(false);
     const textareaRef = useRef(null);
+    const lineNumbersRef = useRef(null);
     // ... existing states ...
     const [activeTab, setActiveTab] = useState('imagenes'); // 'imagenes', 'slaps', 'pistas'
     const [viewImage, setViewImage] = useState(null);
@@ -41,6 +37,12 @@ function CapituloWriter() {
         fetchImagenes();
         fetchSlaps();
         fetchPistas();
+
+        // Activar ancho total para esta página
+        document.body.classList.add('full-width-page');
+        return () => {
+            document.body.classList.remove('full-width-page');
+        };
     }, [id]);
 
     const fetchCapitulo = () => {
@@ -225,6 +227,20 @@ function CapituloWriter() {
             const end = textarea.selectionEnd;
             const newContenido = contenido.substring(0, start) + tag + contenido.substring(end);
             setContenido(newContenido);
+
+            // Devolver el foco al textarea después de insertar
+            setTimeout(() => {
+                textarea.focus();
+                textarea.setSelectionRange(start + tag.length, start + tag.length);
+            }, 0);
+        } else {
+            setContenido(prev => prev + tag);
+        }
+    };
+
+    const handleScroll = () => {
+        if (textareaRef.current && lineNumbersRef.current) {
+            lineNumbersRef.current.scrollTop = textareaRef.current.scrollTop;
         }
     };
 
@@ -318,34 +334,20 @@ function CapituloWriter() {
             </div>
 
             <div className="writer-content-grid">
-                <div className="writer-editor-area" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <Editor
+                <div className="writer-editor-area">
+                    <div className="line-numbers" ref={lineNumbersRef}>
+                        {Array.from({ length: contenido.split('\n').length || 1 }).map((_, i) => (
+                            <div key={i + 1}>{i + 1}</div>
+                        ))}
+                    </div>
+                    <textarea
+                        ref={textareaRef}
+                        className="editor-textarea"
                         value={contenido}
-                        onValueChange={code => setContenido(code)}
-                        highlight={code => {
-                            // Simple regex highlight for [img: ...] and other tags
-                            // We escape HTML characters to prevent XSS/rendering issues first
-                            const escaped = code
-                                .replace(/&/g, "&amp;")
-                                .replace(/</g, "&lt;")
-                                .replace(/>/g, "&gt;");
-
-                            return escaped
-                                .replace(/(\[img:.*?\])/g, '<span style="color: #ffff00; text-shadow: 0 0 2px black;">$1</span>')
-                                .replace(/(\[slap:.*?\])/g, '<span style="color: #ffaa00;">$1</span>')
-                                .replace(/(\[pista:.*?\])/g, '<span style="color: #00ff00;">$1</span>');
-                        }}
-                        padding={10}
-                        textareaClassName="editor-textarea" // We might need to adjust CSS for this to overlay correctly
-                        style={{
-                            fontFamily: '"Fira code", "Fira Mono", monospace',
-                            fontSize: 14,
-                            backgroundColor: '#000000', // Ensure dark background
-                            color: '#e0e0e0',
-                            minHeight: '100%',
-                            flex: 1,
-                        }}
-                        ref={textareaRef} // Editor might not support ref exactly like textarea for selection, we need to handle insertTag differently
+                        onChange={(e) => setContenido(e.target.value)}
+                        onScroll={handleScroll}
+                        placeholder="Escribe tu capítulo aquí..."
+                        spellCheck="false"
                     />
                 </div>
 
