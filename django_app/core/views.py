@@ -111,7 +111,7 @@ class CapituloViewSet(viewsets.ModelViewSet):
     queryset = Capitulo.objects.all()
     serializer_class = CapituloSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_fields = ['tomo', 'es_demo']
+    filterset_fields = ['tomo', 'es_demo', 'is_vip']
     ordering_fields = ['orden', 'id']
 
     def get_queryset(self):
@@ -485,3 +485,36 @@ def debug_storage_view(request):
         lines.append(f"Error subida: {str(e)}")
         
     return HttpResponse("\n".join(lines), content_type="text/plain")
+
+class ClaveAccesoViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ClaveAcceso.objects.all()
+    serializer_class = ClaveAccesoSerializer
+
+    @action(detail=False, methods=['post'])
+    def validar(self, request):
+        clave_input = request.data.get('clave')
+        if not clave_input:
+            return Response({'error': 'No se proporcionó ninguna clave'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            # Check for any valid key with this code
+            # Since clave is unique, we just get it once
+            obj = ClaveAcceso.objects.get(clave=clave_input)
+            
+            if obj.esta_valida():
+                return Response({
+                    'status': 'valida',
+                    'tipo': obj.tipo,
+                    'nombre': obj.nombre
+                })
+            else:
+                return Response({
+                    'status': 'expirada',
+                    'mensaje': 'Esta clave ya no está vigente'
+                }, status=status.HTTP_403_FORBIDDEN)
+                
+        except ClaveAcceso.DoesNotExist:
+            return Response({
+                'status': 'invalida',
+                'mensaje': 'Clave incorrecta'
+            }, status=status.HTTP_404_NOT_FOUND)

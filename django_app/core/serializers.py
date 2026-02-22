@@ -224,3 +224,8 @@ class LibroVisitasSerializer(BaseCloudinarySerializer):
     class Meta:
         model = LibroVisitas
         fields = '__all__'
+
+class ClaveAccesoSerializer(BaseCloudinarySerializer):
+    class Meta:
+        model = ClaveAcceso
+        fields = '__all__'

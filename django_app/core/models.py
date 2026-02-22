@@ -56,7 +56,8 @@ class Capitulo(AuditModel):
     armas = models.BooleanField(default=False)
     sexo = models.BooleanField(default=False)
     eventos = models.BooleanField(default=False)
-    es_demo = models.BooleanField(default=False)
+    es_demo = models.BooleanField(default=True)
+    is_vip = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['orden']
@@ -358,3 +359,43 @@ class Susurro(AuditModel):
 
     def __str__(self):
         return f"Susurro ({self.seccion})"
+
+class ClaveAcceso(AuditModel):
+    TIPO_CHOICES = [
+        ('maestra', 'Llave Maestra (Admin)'),
+        ('vip', 'Acceso VIP Temporal'),
+        ('laptop', 'Acceso Laptop Temporal'),
+    ]
+
+    nombre = models.CharField(max_length=100, help_text="Ej: Acceso VIP Marzo o Master Key")
+    clave = models.CharField(max_length=255, unique=True)
+    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES, default='vip')
+    
+    # Control de tiempo
+    fecha_inicio = models.DateTimeField(null=True, blank=True)
+    fecha_fin = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        verbose_name = "Clave de Acceso"
+        verbose_name_plural = "Claves de Acceso"
+
+    def __str__(self):
+        return f"{self.nombre} ({self.get_tipo_display()})"
+
+    def esta_valida(self):
+        """Lógica para verificar si la clave sirve en este momento"""
+        from django.utils import timezone
+        ahora = timezone.now()
+        
+        if not self.is_active:
+            return False
+            
+        if self.tipo == 'maestra':
+            return True
+            
+        if self.fecha_inicio and ahora < self.fecha_inicio:
+            return False
+        if self.fecha_fin and ahora > self.fecha_fin:
+            return False
+            
+        return True

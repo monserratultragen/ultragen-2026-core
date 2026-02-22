@@ -13,6 +13,7 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
         pais: '', ciudad: '', anio: '',
         romance: false, risas: false, lagrimas: false, violencia: false,
         peligro: false, armas: false, sexo: false, eventos: false,
+        es_demo: true, is_vip: false,
         is_active: true
     });
     const [imagen, setImagen] = useState(null);
@@ -30,6 +31,7 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
                 pais: cap.pais || '', ciudad: cap.ciudad || '', anio: cap.anio || '',
                 romance: cap.romance, risas: cap.risas, lagrimas: cap.lagrimas, violencia: cap.violencia,
                 peligro: cap.peligro, armas: cap.armas, sexo: cap.sexo, eventos: cap.eventos,
+                es_demo: cap.es_demo, is_vip: cap.is_vip,
                 is_active: cap.is_active
             });
         } else {
@@ -44,6 +46,7 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
                 pais: '', ciudad: '', anio: '',
                 romance: false, risas: false, lagrimas: false, violencia: false,
                 peligro: false, armas: false, sexo: false, eventos: false,
+                es_demo: true, is_vip: false,
                 is_active: true
             });
         }
@@ -60,6 +63,7 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
             pais: '', ciudad: '', anio: '',
             romance: false, risas: false, lagrimas: false, violencia: false,
             peligro: false, armas: false, sexo: false, eventos: false,
+            es_demo: true, is_vip: false,
             is_active: true
         });
         setImagen(null);
@@ -165,8 +169,12 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
                             <th style={{ width: '50px' }}>Ord</th>
                             {!selectedTomoId && <th>Tomo</th>}
                             <th>Nombre</th>
-                            <th>Sinopsis</th>
                             <th>Imagen</th>
+
+                            <th title="Demo">Demo</th>
+                            <th title="VIP">VIP</th>
+                            <th title="Activo">Activo</th>
+
                             <th style={{ width: '100px' }}>Actualizado</th>
 
                             {/* Contexto */}
@@ -193,14 +201,16 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
                                 <td style={{ textAlign: 'center' }}>{cap.orden}</td>
                                 {!selectedTomoId && <td>{getTomoName(cap.tomo)}</td>}
                                 <td>{cap.nombre}</td>
-                                <td style={{ fontSize: '0.8rem', color: '#888' }}>
-                                    {cap.sinopsis ? (cap.sinopsis.length > 50 ? cap.sinopsis.substring(0, 50) + '...' : cap.sinopsis) : '-'}
-                                </td>
                                 <td>
                                     {cap.ruta_img && (
                                         <img src={getImageUrl(cap.ruta_img)} alt={cap.nombre} style={{ height: '50px', borderRadius: '4px' }} />
                                     )}
                                 </td>
+
+                                <td className={`bool-cell ${cap.es_demo ? 'active' : ''}`} style={{ cursor: 'default' }}>{cap.es_demo ? 'YES' : 'NO'}</td>
+                                <td className={`bool-cell ${cap.is_vip ? 'active' : ''}`} style={{ cursor: 'default' }}>{cap.is_vip ? 'YES' : 'NO'}</td>
+                                <td className={`bool-cell ${cap.is_active ? 'active' : ''}`} style={{ cursor: 'default' }}>{cap.is_active ? 'YES' : 'NO'}</td>
+
                                 <td style={{ fontSize: '0.8rem' }}>
                                     {cap.updated_at ? new Date(cap.updated_at).toLocaleDateString() : '-'}
                                 </td>
@@ -248,7 +258,7 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
                         ))}
                         {filteredCapitulos.length === 0 && (
                             <tr>
-                                <td colSpan="17" style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                                <td colSpan="19" style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
                                     {selectedTomoId ? "No hay capítulos en este tomo." : "No hay capítulos registrados."}
                                 </td>
                             </tr>
@@ -311,7 +321,7 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
                         rows="5"
                     />
 
-                    <div style={{ margin: '10px 0', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                    <div style={{ margin: '10px 0', display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
                         {['romance', 'risas', 'lagrimas', 'violencia', 'peligro', 'armas', 'sexo', 'eventos'].map(tag => (
                             <label key={tag} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', textTransform: 'capitalize' }}>
                                 <input
@@ -325,15 +335,35 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
                         ))}
                     </div>
 
-                    <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <input
-                            type="checkbox"
-                            id="capitulo-active"
-                            checked={newCapitulo.is_active}
-                            onChange={e => setNewCapitulo({ ...newCapitulo, is_active: e.target.checked })}
-                            style={{ width: 'auto' }}
-                        />
-                        <label htmlFor="capitulo-active">Activo</label>
+                    <div style={{ marginBottom: '15px', display: 'flex', gap: '20px', alignItems: 'center', padding: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.9rem', cursor: 'pointer' }}>
+                            <input
+                                type="checkbox"
+                                checked={newCapitulo.es_demo}
+                                onChange={e => setNewCapitulo({ ...newCapitulo, es_demo: e.target.checked })}
+                                style={{ width: 'auto' }}
+                            />
+                            Demo
+                        </label>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.9rem', cursor: 'pointer' }}>
+                            <input
+                                type="checkbox"
+                                checked={newCapitulo.is_vip}
+                                onChange={e => setNewCapitulo({ ...newCapitulo, is_vip: e.target.checked })}
+                                style={{ width: 'auto' }}
+                            />
+                            VIP
+                        </label>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.9rem', cursor: 'pointer' }}>
+                            <input
+                                type="checkbox"
+                                id="capitulo-active"
+                                checked={newCapitulo.is_active}
+                                onChange={e => setNewCapitulo({ ...newCapitulo, is_active: e.target.checked })}
+                                style={{ width: 'auto' }}
+                            />
+                            Activo
+                        </label>
                     </div>
 
                     <div style={{ marginBottom: '10px' }}>
