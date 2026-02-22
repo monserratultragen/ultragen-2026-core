@@ -5,7 +5,7 @@ from .models import (
     Personaje, Conversacion, Mensaje, Expediente, ExpedienteImagen, SaludoEditora,
     Presentacion, Slide, Tablero, RecuerdoLeticia, InstagramPerfil, InstagramPost,
     MercadoUmbralNoticia, MercadoUmbralCompra, MercadoUmbralCyborg, MercadoUmbralHumano,
-    MercadoUmbralHumanoImagen, Bienvenida, LibroVisitas, Seguridad, Desktop, Susurro
+    MercadoUmbralHumanoImagen, Bienvenida, LibroVisitas, Seguridad, Desktop, Susurro, ClaveAcceso
 )
 
 class CloudinaryImageField(serializers.ImageField):

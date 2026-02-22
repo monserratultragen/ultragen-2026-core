@@ -9,7 +9,7 @@ from .models import (
     Personaje, Conversacion, Mensaje, Expediente, ExpedienteImagen, SaludoEditora,
     Presentacion, Slide, Tablero, RecuerdoLeticia, InstagramPerfil, InstagramPost,
     MercadoUmbralNoticia, MercadoUmbralCompra, MercadoUmbralCyborg, MercadoUmbralHumano,
-    MercadoUmbralHumanoImagen, Bienvenida, LibroVisitas, Seguridad, Desktop, Susurro
+    MercadoUmbralHumanoImagen, Bienvenida, LibroVisitas, Seguridad, Desktop, Susurro, ClaveAcceso
 )
 from .serializers import (
     DiarioSerializer, TomoSerializer, CapituloSerializer,
@@ -20,7 +20,7 @@ from .serializers import (
     InstagramPerfilSerializer, InstagramPostSerializer,
     MercadoUmbralNoticiaSerializer, MercadoUmbralCompraSerializer,
     MercadoUmbralCyborgSerializer, MercadoUmbralHumanoSerializer,
-    MercadoUmbralHumanoImagenSerializer, BienvenidaSerializer, LibroVisitasSerializer, SeguridadSerializer, DesktopSerializer, SusurroSerializer
+    MercadoUmbralHumanoImagenSerializer, BienvenidaSerializer, LibroVisitasSerializer, SeguridadSerializer, DesktopSerializer, SusurroSerializer, ClaveAccesoSerializer
 )
 
 class SeguridadViewSet(viewsets.ModelViewSet):
