@@ -116,9 +116,8 @@ class CapituloViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        if not self.request.user.is_staff:
-             queryset = queryset.filter(is_active=True)
-             # Optional: filter by es_demo if that was the intent, but is_active is safer for now
+        # En el manager siempre queremos ver todos los capítulos (activos e inactivos)
+        # El frontend público (ultragen_site_simple) ya filtra por is_active en su propio código
         return queryset
 
 class CapituloImagenViewSet(viewsets.ModelViewSet):
@@ -497,9 +496,8 @@ class ClaveAccesoViewSet(viewsets.ReadOnlyModelViewSet):
             return Response({'error': 'No se proporcionó ninguna clave'}, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            # Check for any valid key with this code
-            # Since clave is unique, we just get it once
-            obj = ClaveAcceso.objects.get(clave=clave_input)
+            # Check for any valid key with this code (case-insensitive)
+            obj = ClaveAcceso.objects.get(clave__iexact=clave_input)
             
             if obj.esta_valida():
                 return Response({
