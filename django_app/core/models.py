@@ -58,6 +58,7 @@ class Capitulo(AuditModel):
     eventos = models.BooleanField(default=False)
     es_demo = models.BooleanField(default=True)
     is_vip = models.BooleanField(default=False)
+    palabras = models.IntegerField(default=0, help_text="Contador de palabras del capítulo")
 
     class Meta:
         ordering = ['orden']

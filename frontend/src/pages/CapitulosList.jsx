@@ -176,6 +176,7 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
                             <th title="Activo">Activo</th>
 
                             <th style={{ width: '100px' }}>Actualizado</th>
+                            <th title="Palabras" style={{ width: '80px' }}>Pals</th>
 
                             {/* Contexto */}
                             <th title="País">🏳️</th>
@@ -213,6 +214,9 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
 
                                 <td style={{ fontSize: '0.8rem' }}>
                                     {cap.updated_at ? new Date(cap.updated_at).toLocaleDateString() : '-'}
+                                </td>
+                                <td style={{ textAlign: 'center', fontSize: '0.8rem' }}>
+                                    {cap.palabras || 0}
                                 </td>
 
                                 {/* Contexto */}

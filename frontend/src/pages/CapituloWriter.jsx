@@ -82,12 +82,26 @@ function CapituloWriter() {
             });
     };
 
+    const countWords = (text) => {
+        if (!text) return 0;
+        // Strip tags like [img: ...] [slap: ...] [pista: ...] to get real word count?
+        // User didn't specify, but usually word count is the "story" words.
+        // For simplicity and accuracy of "content size", we can just count all words or strip tags.
+        // Let's strip tags for a more "literary" word count.
+        const cleanText = text.replace(/\[(img|slap|pista):[^\]]+\]/g, '');
+        const words = cleanText.trim().split(/\s+/);
+        return words.length === 1 && words[0] === "" ? 0 : words.length;
+    };
+
     const handleSave = () => {
         if (isSaving) return;
         setIsSaving(true);
 
-        api.patch(`/capitulos/${id}/`, { contenido })
-            .then(() => {
+        const palabras = countWords(contenido);
+
+        api.patch(`/capitulos/${id}/`, { contenido, palabras })
+            .then(res => {
+                setCapitulo(prev => ({ ...prev, palabras: res.data.palabras }));
                 alert('Guardado correctamente');
             })
             .catch(err => {
@@ -310,6 +324,9 @@ function CapituloWriter() {
                         </span>
                         <br />
                         {capitulo?.nombre}
+                        <span style={{ fontSize: '0.8rem', color: '#666', marginLeft: '15px', textTransform: 'none', fontWeight: 'normal' }}>
+                            {countWords(contenido)} palabras
+                        </span>
                     </h2>
                 </div>
                 <div className="writer-tools">
