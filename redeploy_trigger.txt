@@ -1,0 +1,3 @@
+Force redeploy commit to ensure models and serializers are updated.
+Time: 2026-02-23 15:10
+Reason: Production API missing is_vip and palabras fields.
