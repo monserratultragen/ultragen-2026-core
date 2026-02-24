@@ -80,6 +80,7 @@ class CapituloSerializer(BaseCloudinarySerializer):
     pistas = CapituloPistaSerializer(many=True, read_only=True)
 
     tomo_nombre = serializers.CharField(source='tomo.nombre', read_only=True)
+    tomo_id = serializers.IntegerField(source='tomo.id', read_only=True)
     tomo_orden = serializers.IntegerField(source='tomo.orden', read_only=True)
     diario_nombre = serializers.CharField(source='tomo.diario.nombre', read_only=True)
     diario_orden = serializers.IntegerField(source='tomo.diario.orden', read_only=True)
