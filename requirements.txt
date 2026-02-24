@@ -10,3 +10,4 @@ whitenoise
 cloudinary
 django-cloudinary-storage
 python-dotenv
+openpyxl==3.1.2
