@@ -10,6 +10,7 @@ from .views import (
     MercadoUmbralNoticiaViewSet, MercadoUmbralCompraViewSet,
     MercadoUmbralCyborgViewSet, MercadoUmbralHumanoViewSet,
     MercadoUmbralHumanoImagenViewSet, BienvenidaViewSet, UniversalLoaderViewSet, LibroVisitasViewSet, SeguridadViewSet, DashboardStatsViewSet, DesktopViewSet, SusurroViewSet, ClaveAccesoViewSet,
+    PromptAIViewSet, ImagenAIBaseViewSet,
     debug_storage_view
 )
 
@@ -43,6 +44,8 @@ router.register(r'seguridad', SeguridadViewSet)
 router.register(r'desktop', DesktopViewSet)
 router.register(r'susurros', SusurroViewSet)
 router.register(r'claves-acceso', ClaveAccesoViewSet)
+router.register(r'prompts-ai', PromptAIViewSet)
+router.register(r'imagenes-ai-base', ImagenAIBaseViewSet)
 router.register(r'dashboard-stats', DashboardStatsViewSet, basename='dashboard-stats')
 router.register(r'universal-loader', UniversalLoaderViewSet, basename='universal-loader')
 

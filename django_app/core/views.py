@@ -9,7 +9,8 @@ from .models import (
     Personaje, Conversacion, Mensaje, Expediente, ExpedienteImagen, SaludoEditora,
     Presentacion, Slide, Tablero, RecuerdoLeticia, InstagramPerfil, InstagramPost,
     MercadoUmbralNoticia, MercadoUmbralCompra, MercadoUmbralCyborg, MercadoUmbralHumano,
-    MercadoUmbralHumanoImagen, Bienvenida, LibroVisitas, Seguridad, Desktop, Susurro, ClaveAcceso
+    MercadoUmbralHumanoImagen, Bienvenida, LibroVisitas, Seguridad, Desktop, Susurro, ClaveAcceso,
+    PromptAI, ImagenAIBase
 )
 from .serializers import (
     DiarioSerializer, TomoSerializer, CapituloSerializer,
@@ -20,7 +21,8 @@ from .serializers import (
     InstagramPerfilSerializer, InstagramPostSerializer,
     MercadoUmbralNoticiaSerializer, MercadoUmbralCompraSerializer,
     MercadoUmbralCyborgSerializer, MercadoUmbralHumanoSerializer,
-    MercadoUmbralHumanoImagenSerializer, BienvenidaSerializer, LibroVisitasSerializer, SeguridadSerializer, DesktopSerializer, SusurroSerializer, ClaveAccesoSerializer
+    MercadoUmbralHumanoImagenSerializer, BienvenidaSerializer, LibroVisitasSerializer, SeguridadSerializer, DesktopSerializer, SusurroSerializer, ClaveAccesoSerializer,
+    PromptAISerializer, ImagenAIBaseSerializer
 )
 
 class SeguridadViewSet(viewsets.ModelViewSet):
@@ -516,3 +518,15 @@ class ClaveAccesoViewSet(viewsets.ReadOnlyModelViewSet):
                 'status': 'invalida',
                 'mensaje': 'Clave incorrecta'
             }, status=status.HTTP_404_NOT_FOUND)
+
+class PromptAIViewSet(viewsets.ModelViewSet):
+    queryset = PromptAI.objects.all()
+    serializer_class = PromptAISerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['id', 'titulo']
+
+class ImagenAIBaseViewSet(viewsets.ModelViewSet):
+    queryset = ImagenAIBase.objects.all()
+    serializer_class = ImagenAIBaseSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['id', 'titulo']

@@ -400,3 +400,19 @@ class ClaveAcceso(AuditModel):
             return False
             
         return True
+
+class PromptAI(AuditModel):
+    titulo = models.CharField(max_length=255)
+    prompt = models.TextField()
+    notas = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.titulo
+
+class ImagenAIBase(AuditModel):
+    titulo = models.CharField(max_length=255)
+    notas = models.TextField(blank=True, null=True)
+    imagen = models.ImageField(upload_to='imagenes_ai_base/', blank=True, null=True)
+
+    def __str__(self):
+        return self.titulo

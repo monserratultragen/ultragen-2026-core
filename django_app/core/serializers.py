@@ -5,7 +5,8 @@ from .models import (
     Personaje, Conversacion, Mensaje, Expediente, ExpedienteImagen, SaludoEditora,
     Presentacion, Slide, Tablero, RecuerdoLeticia, InstagramPerfil, InstagramPost,
     MercadoUmbralNoticia, MercadoUmbralCompra, MercadoUmbralCyborg, MercadoUmbralHumano,
-    MercadoUmbralHumanoImagen, Bienvenida, LibroVisitas, Seguridad, Desktop, Susurro, ClaveAcceso
+    MercadoUmbralHumanoImagen, Bienvenida, LibroVisitas, Seguridad, Desktop, Susurro, ClaveAcceso,
+    PromptAI, ImagenAIBase
 )
 
 class CloudinaryImageField(serializers.ImageField):
@@ -229,4 +230,14 @@ class LibroVisitasSerializer(BaseCloudinarySerializer):
 class ClaveAccesoSerializer(BaseCloudinarySerializer):
     class Meta:
         model = ClaveAcceso
+        fields = '__all__'
+
+class PromptAISerializer(BaseCloudinarySerializer):
+    class Meta:
+        model = PromptAI
+        fields = '__all__'
+
+class ImagenAIBaseSerializer(BaseCloudinarySerializer):
+    class Meta:
+        model = ImagenAIBase
         fields = '__all__'

@@ -59,6 +59,12 @@ function Dashboard() {
                         details={`${stats.popup?.saludos} Ed, ${stats.popup?.recuerdos} Rec, ${stats.popup?.bienvenidas} Sal, ${stats.popup?.visitas} Vis, ${stats.popup?.seguridad} Seg`}
                         icon="💬"
                     />
+                    <StatCard
+                        title="AI Backups"
+                        count=""
+                        details="Gestor de Prompts e Imágenes Base"
+                        icon="🤖"
+                    />
                 </div>
             </div>
         </div>

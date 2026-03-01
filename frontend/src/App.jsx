@@ -19,6 +19,8 @@ import BienvenidasList from './pages/BienvenidasList';
 
 import DesktopList from './pages/DesktopList';
 import SusurrosList from './pages/SusurrosList';
+import PromptAIManager from './pages/PromptAIManager';
+import ImagenAIBaseManager from './pages/ImagenAIBaseManager';
 
 // New Views
 import DiariosView from './pages/DiariosView';
@@ -33,20 +35,22 @@ function App() {
   return (
     <Router>
       <div className="navbar">
-        <div className="container nav-content">
-          <Link to="/" className="nav-logo">ULTRAGEN</Link>
-          <div>
-            <Link to="/" className="btn">Dashboard</Link>
-            <Link to="/desktop" className="btn" style={{ marginLeft: '10px' }}>Desktop</Link>
-            <Link to="/susurros" className="btn" style={{ marginLeft: '10px' }}>Susurros</Link>
-            <Link to="/diarios-main" className="btn" style={{ marginLeft: '10px' }}>Diarios</Link>
-            <Link to="/movil" className="btn" style={{ marginLeft: '10px' }}>Movil</Link>
-            <Link to="/expedientes" className="btn" style={{ marginLeft: '10px' }}>Expedientes</Link>
-            <Link to="/tablet" className="btn" style={{ marginLeft: '10px' }}>Tablet</Link>
-            <Link to="/tableros" className="btn" style={{ marginLeft: '10px' }}>TABLEROS</Link>
-            <Link to="/laptop" className="btn" style={{ marginLeft: '10px' }}>Laptop</Link>
-            <Link to="/popup" className="btn" style={{ marginLeft: '10px' }}>Pop-Up</Link>
-            <Link to="/universal-loader" className="btn" style={{ marginLeft: '10px' }}>Data</Link>
+        <div className="container nav-content" style={{ flexWrap: 'wrap', gap: '5px' }}>
+          <Link to="/" className="nav-logo" style={{ marginRight: '15px' }}>ULTRAGEN</Link>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
+            <Link to="/" className="btn btn-sm">Dashboard</Link>
+            <Link to="/desktop" className="btn btn-sm">Desktop</Link>
+            <Link to="/susurros" className="btn btn-sm">Susurros</Link>
+            <Link to="/diarios-main" className="btn btn-sm">Diarios</Link>
+            <Link to="/movil" className="btn btn-sm">Movil</Link>
+            <Link to="/expedientes" className="btn btn-sm">Expedientes</Link>
+            <Link to="/tablet" className="btn btn-sm">Tablet</Link>
+            <Link to="/tableros" className="btn btn-sm">TABLEROS</Link>
+            <Link to="/laptop" className="btn btn-sm">Laptop</Link>
+            <Link to="/popup" className="btn btn-sm">Pop-Up</Link>
+            <Link to="/universal-loader" className="btn btn-sm">Data</Link>
+            <Link to="/prompts-ai" className="btn btn-sm">Prompts AI</Link>
+            <Link to="/imagenes-ai" className="btn btn-sm">Img AI Base</Link>
           </div>
         </div>
       </div>
@@ -80,6 +84,8 @@ function App() {
           <Route path="/bienvenidas" element={<BienvenidasList />} />
           <Route path="/popup" element={<PopUp />} />
           <Route path="/universal-loader" element={<UniversalLoader />} />
+          <Route path="/prompts-ai" element={<PromptAIManager />} />
+          <Route path="/imagenes-ai" element={<ImagenAIBaseManager />} />
         </Routes>
       </div>
     </Router>
