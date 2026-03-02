@@ -276,7 +276,7 @@ td {
   padding: 0;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-right: 2px;
+  margin-right: 0px;
 }
 
 .action-btn:hover:not(:disabled) {
@@ -290,9 +290,13 @@ td {
 }
 
 .action-btn svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   fill: currentColor;
+}
+
+td:has(> .action-btn) {
+  padding: 0 !important;
 }
 
 .bool-cell {

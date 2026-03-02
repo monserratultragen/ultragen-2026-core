@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../services/api';
 import Modal from '../components/Modal';
 import { getImageUrl } from '../utils/imageUtils';
+import CapituloPromptsModal from '../components/CapituloPromptsModal';
 
 function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios }) {
     const navigate = useNavigate();
@@ -19,6 +20,7 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
     const [imagen, setImagen] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
+    const [promptsChapter, setPromptsChapter] = useState(null); // { id, name }
 
 
 
@@ -166,7 +168,7 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
                 <table>
                     <thead>
                         <tr>
-                            <th style={{ width: '50px' }}>Ord</th>
+                            <th style={{ width: '20px' }}>Ord</th>
                             {!selectedTomoId && <th>Tomo</th>}
                             <th>Nombre</th>
                             <th>Imagen</th>
@@ -241,6 +243,13 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
                                         title="Editar"
                                     >
                                         <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" /></svg>
+                                    </button>
+                                    <button
+                                        className="action-btn"
+                                        onClick={(e) => { e.stopPropagation(); setPromptsChapter({ id: cap.id, nombre: cap.nombre }); }}
+                                        title="Prompts"
+                                    >
+                                        <svg viewBox="0 0 24 24"><path d="M12 11.55C9.64 9.35 6.48 8 3 8v11c3.48 0 6.64 1.35 9 3.55 2.36-2.2 5.52-3.55 9-3.55V8c-3.48 0-6.64 1.35-9 3.55zM12 8c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3z" /></svg>
                                     </button>
                                     <button
                                         className="action-btn"
@@ -385,6 +394,13 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
                     </button>
                 </form>
             </Modal>
+
+            <CapituloPromptsModal
+                isOpen={!!promptsChapter}
+                onClose={() => setPromptsChapter(null)}
+                capituloId={promptsChapter?.id}
+                capituloNombre={promptsChapter?.nombre}
+            />
         </div>
     );
 }

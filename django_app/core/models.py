@@ -409,6 +409,15 @@ class PromptAI(AuditModel):
     def __str__(self):
         return self.titulo
 
+class CapituloPrompt(AuditModel):
+    capitulo = models.ForeignKey(Capitulo, on_delete=models.CASCADE, related_name='prompts')
+    titulo = models.CharField(max_length=255)
+    prompt = models.TextField()
+    notas = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.titulo
+
 class ImagenAIBase(AuditModel):
     titulo = models.CharField(max_length=255)
     notas = models.TextField(blank=True, null=True)

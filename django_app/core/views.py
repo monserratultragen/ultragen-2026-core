@@ -10,7 +10,7 @@ from .models import (
     Presentacion, Slide, Tablero, RecuerdoLeticia, InstagramPerfil, InstagramPost,
     MercadoUmbralNoticia, MercadoUmbralCompra, MercadoUmbralCyborg, MercadoUmbralHumano,
     MercadoUmbralHumanoImagen, Bienvenida, LibroVisitas, Seguridad, Desktop, Susurro, ClaveAcceso,
-    PromptAI, ImagenAIBase
+    PromptAI, ImagenAIBase, CapituloPrompt
 )
 from .serializers import (
     DiarioSerializer, TomoSerializer, CapituloSerializer,
@@ -22,7 +22,7 @@ from .serializers import (
     MercadoUmbralNoticiaSerializer, MercadoUmbralCompraSerializer,
     MercadoUmbralCyborgSerializer, MercadoUmbralHumanoSerializer,
     MercadoUmbralHumanoImagenSerializer, BienvenidaSerializer, LibroVisitasSerializer, SeguridadSerializer, DesktopSerializer, SusurroSerializer, ClaveAccesoSerializer,
-    PromptAISerializer, ImagenAIBaseSerializer
+    PromptAISerializer, ImagenAIBaseSerializer, CapituloPromptSerializer
 )
 
 class SeguridadViewSet(viewsets.ModelViewSet):
@@ -529,4 +529,11 @@ class ImagenAIBaseViewSet(viewsets.ModelViewSet):
     queryset = ImagenAIBase.objects.all()
     serializer_class = ImagenAIBaseSerializer
     filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['id', 'titulo']
+
+class CapituloPromptViewSet(viewsets.ModelViewSet):
+    queryset = CapituloPrompt.objects.all()
+    serializer_class = CapituloPromptSerializer
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_fields = ['capitulo']
     ordering_fields = ['id', 'titulo']
