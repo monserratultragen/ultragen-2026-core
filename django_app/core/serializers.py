@@ -6,7 +6,7 @@ from .models import (
     Presentacion, Slide, Tablero, RecuerdoLeticia, InstagramPerfil, InstagramPost,
     MercadoUmbralNoticia, MercadoUmbralCompra, MercadoUmbralCyborg, MercadoUmbralHumano,
     MercadoUmbralHumanoImagen, Bienvenida, LibroVisitas, Seguridad, Desktop, Susurro, ClaveAcceso,
-    PromptAI, ImagenAIBase, CapituloPrompt
+    PromptAI, ImagenAIBase, CapituloPrompt, Visita
 )
 
 class CloudinaryImageField(serializers.ImageField):
@@ -245,4 +245,8 @@ class ImagenAIBaseSerializer(BaseCloudinarySerializer):
 class CapituloPromptSerializer(BaseCloudinarySerializer):
     class Meta:
         model = CapituloPrompt
+        fields = '__all__'
+class VisitaSerializer(BaseCloudinarySerializer):
+    class Meta:
+        model = Visita
         fields = '__all__'

@@ -10,11 +10,12 @@ from .views import (
     MercadoUmbralNoticiaViewSet, MercadoUmbralCompraViewSet,
     MercadoUmbralCyborgViewSet, MercadoUmbralHumanoViewSet,
     MercadoUmbralHumanoImagenViewSet, BienvenidaViewSet, UniversalLoaderViewSet, LibroVisitasViewSet, SeguridadViewSet, DashboardStatsViewSet, DesktopViewSet, SusurroViewSet, ClaveAccesoViewSet,
-    PromptAIViewSet, ImagenAIBaseViewSet, CapituloPromptViewSet,
+    PromptAIViewSet, ImagenAIBaseViewSet, CapituloPromptViewSet, VisitaViewSet,
     debug_storage_view
 )
 
 router = DefaultRouter()
+router.register(r'visitas', VisitaViewSet)
 router.register(r'diarios', DiarioViewSet)
 router.register(r'tomos', TomoViewSet)
 router.register(r'capitulos', CapituloViewSet)

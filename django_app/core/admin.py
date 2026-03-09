@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     Seguridad, Diario, Tomo, Capitulo, Susurro, ClaveAcceso,
-    PromptAI, CapituloPrompt, ImagenAIBase
+    PromptAI, CapituloPrompt, ImagenAIBase, Visita
 )
 
 @admin.register(Seguridad)

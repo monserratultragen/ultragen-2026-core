@@ -10,8 +10,9 @@ from .models import (
     Presentacion, Slide, Tablero, RecuerdoLeticia, InstagramPerfil, InstagramPost,
     MercadoUmbralNoticia, MercadoUmbralCompra, MercadoUmbralCyborg, MercadoUmbralHumano,
     MercadoUmbralHumanoImagen, Bienvenida, LibroVisitas, Seguridad, Desktop, Susurro, ClaveAcceso,
-    PromptAI, ImagenAIBase, CapituloPrompt
+    PromptAI, ImagenAIBase, CapituloPrompt, Visita
 )
+from .utils_geo import get_geo_info
 from .serializers import (
     DiarioSerializer, TomoSerializer, CapituloSerializer,
     CapituloImagenSerializer, CapituloSlapSerializer, CapituloPistaSerializer,
@@ -22,7 +23,7 @@ from .serializers import (
     MercadoUmbralNoticiaSerializer, MercadoUmbralCompraSerializer,
     MercadoUmbralCyborgSerializer, MercadoUmbralHumanoSerializer,
     MercadoUmbralHumanoImagenSerializer, BienvenidaSerializer, LibroVisitasSerializer, SeguridadSerializer, DesktopSerializer, SusurroSerializer, ClaveAccesoSerializer,
-    PromptAISerializer, ImagenAIBaseSerializer, CapituloPromptSerializer
+    PromptAISerializer, ImagenAIBaseSerializer, CapituloPromptSerializer, VisitaSerializer
 )
 
 class SeguridadViewSet(viewsets.ModelViewSet):
@@ -538,3 +539,34 @@ class CapituloPromptViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ['capitulo']
     ordering_fields = ['id', 'titulo']
+
+class VisitaViewSet(viewsets.ModelViewSet):
+    queryset = Visita.objects.all()
+    serializer_class = VisitaSerializer
+    permission_classes = [permissions.AllowAny]
+
+    @action(detail=False, methods=['post'])
+    def log_visit(self, request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0].strip()
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+
+        geo = get_geo_info(ip)
+        
+        visita = Visita.objects.create(
+            ip=ip,
+            pais=geo['country'],
+            pais_codigo=geo['countryCode'],
+            ciudad=geo['city'],
+            ruta=request.data.get('ruta', '/backups')
+        )
+        
+        return Response({"status": "logged", "country": visita.pais}, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        from django.db.models import Count
+        stats = Visita.objects.values('pais', 'pais_codigo').annotate(total=Count('id')).order_by('-total')
+        return Response(stats)

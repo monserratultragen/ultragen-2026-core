@@ -440,3 +440,18 @@ class ImagenAIBase(AuditModel):
 
     def __str__(self):
         return self.titulo
+
+class Visita(AuditModel):
+    ip = models.GenericIPAddressField(null=True, blank=True)
+    pais = models.CharField(max_length=100, default="Unknown", verbose_name="País")
+    pais_codigo = models.CharField(max_length=10, default="??", verbose_name="Código País")
+    ciudad = models.CharField(max_length=100, default="Unknown", verbose_name="Ciudad")
+    ruta = models.CharField(max_length=255, default="/backups")
+
+    class Meta:
+        verbose_name = "Visita"
+        verbose_name_plural = "Visitas"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.ip} - {self.pais} ({self.created_at.strftime('%Y-%m-%d %H:%M')})"
