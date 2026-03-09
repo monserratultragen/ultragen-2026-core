@@ -522,7 +522,8 @@ class ClaveAccesoViewSet(viewsets.ReadOnlyModelViewSet):
 class PromptAIViewSet(viewsets.ModelViewSet):
     queryset = PromptAI.objects.all()
     serializer_class = PromptAISerializer
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_fields = ['categoria']
     ordering_fields = ['id', 'titulo']
 
 class ImagenAIBaseViewSet(viewsets.ModelViewSet):

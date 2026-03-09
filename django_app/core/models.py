@@ -402,6 +402,21 @@ class ClaveAcceso(AuditModel):
         return True
 
 class PromptAI(AuditModel):
+    CATEGORIA_CHOICES = [
+        ('perfil-sl', 'Perfil SL'),
+        ('personajes', 'Personajes'),
+        ('bienvenidas', 'Bienvenidas'),
+        ('book-fotos', 'Book de Fotos'),
+        ('utilidades', 'Utilidades'),
+        ('variados', 'Variados'),
+        ('modelo-prompt', 'Modelo de Prompt'),
+    ]
+    categoria = models.CharField(
+        max_length=50, 
+        choices=CATEGORIA_CHOICES, 
+        default='variados',
+        verbose_name="Categoría"
+    )
     titulo = models.CharField(max_length=255)
     prompt = models.TextField()
     notas = models.TextField(blank=True, null=True)

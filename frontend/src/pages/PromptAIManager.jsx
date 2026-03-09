@@ -6,7 +6,17 @@ function PromptAIManager() {
     const [items, setItems] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
-    const [form, setForm] = useState({ titulo: '', prompt: '', notas: '' });
+    const [form, setForm] = useState({ titulo: '', prompt: '', notas: '', categoria: 'variados' });
+
+    const CATEGORIAS = [
+        { id: 'perfil-sl', label: 'Perfil SL' },
+        { id: 'personajes', label: 'Personajes' },
+        { id: 'bienvenidas', label: 'Bienvenidas' },
+        { id: 'book-fotos', label: 'Book de Fotos' },
+        { id: 'utilidades', label: 'Utilidades' },
+        { id: 'variados', label: 'Variados' },
+        { id: 'modelo-prompt', label: 'Modelo de Prompt' },
+    ];
 
     useEffect(() => {
         fetchItems();
@@ -21,10 +31,15 @@ function PromptAIManager() {
     const handleOpenModal = (item = null) => {
         if (item) {
             setEditingId(item.id);
-            setForm({ titulo: item.titulo, prompt: item.prompt, notas: item.notas || '' });
+            setForm({
+                titulo: item.titulo,
+                prompt: item.prompt,
+                notas: item.notas || '',
+                categoria: item.categoria || 'variados'
+            });
         } else {
             setEditingId(null);
-            setForm({ titulo: '', prompt: '', notas: '' });
+            setForm({ titulo: '', prompt: '', notas: '', categoria: 'variados' });
         }
         setIsModalOpen(true);
     };
@@ -50,6 +65,11 @@ function PromptAIManager() {
         }
     };
 
+    const getCategoryLabel = (catId) => {
+        const cat = CATEGORIAS.find(c => c.id === catId);
+        return cat ? cat.label : catId;
+    };
+
     return (
         <div className="page-container">
             <div className="content-area">
@@ -64,6 +84,7 @@ function PromptAIManager() {
                             <tr>
                                 <th>ID</th>
                                 <th>Título</th>
+                                <th>Categoría</th>
                                 <th>Prompt</th>
                                 <th>Notas</th>
                                 <th>Acciones</th>
@@ -74,6 +95,11 @@ function PromptAIManager() {
                                 <tr key={item.id}>
                                     <td>{item.id}</td>
                                     <td>{item.titulo}</td>
+                                    <td>
+                                        <span className="badge" style={{ fontSize: '0.75rem', backgroundColor: 'rgba(255,255,255,0.1)' }}>
+                                            {getCategoryLabel(item.categoria)}
+                                        </span>
+                                    </td>
                                     <td style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                         {item.prompt}
                                     </td>
@@ -101,7 +127,7 @@ function PromptAIManager() {
                             ))}
                             {items.length === 0 && (
                                 <tr>
-                                    <td colSpan="5" style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                                    <td colSpan="6" style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
                                         No hay prompts registrados.
                                     </td>
                                 </tr>
@@ -120,6 +146,19 @@ function PromptAIManager() {
                                 onChange={e => setForm({ ...form, titulo: e.target.value })}
                                 required
                             />
+                        </div>
+                        <div className="form-group">
+                            <label>Categoría</label>
+                            <select
+                                value={form.categoria}
+                                onChange={e => setForm({ ...form, categoria: e.target.value })}
+                                required
+                                style={{ width: '100%', padding: '8px', borderRadius: '4px', backgroundColor: '#222', color: '#fff', border: '1px solid #444' }}
+                            >
+                                {CATEGORIAS.map(cat => (
+                                    <option key={cat.id} value={cat.id}>{cat.label}</option>
+                                ))}
+                            </select>
                         </div>
                         <div className="form-group">
                             <label>Prompt (Texto Copiado)</label>
