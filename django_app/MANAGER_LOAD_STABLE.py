@@ -49,7 +49,7 @@ def load_stable(filename):
         print(f"--> Cargando {model_name} ({len(items)} objetos)...")
         try:
             # Ejecutamos loaddata para este fragmento
-            res = subprocess.run([python_exe, manage_py, 'loaddata', tmp_file], capture_output=True, text=True)
+            res = subprocess.run([python_exe, manage_py, 'loaddata', tmp_file], capture_output=True, text=True, encoding='utf-8')
             if res.returncode != 0:
                 print(f"ERROR en {model_name}: {res.stderr}")
                 success = False
