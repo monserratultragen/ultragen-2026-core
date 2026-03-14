@@ -401,20 +401,24 @@ class ClaveAcceso(AuditModel):
             
         return True
 
+class PromptCategoria(AuditModel):
+    nombre = models.CharField(max_length=255, unique=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = "Categoría de Prompt"
+        verbose_name_plural = "Categorías de Prompts"
+
 class PromptAI(AuditModel):
-    CATEGORIA_CHOICES = [
-        ('perfil-sl', 'Perfil SL'),
-        ('personajes', 'Personajes'),
-        ('bienvenidas', 'Bienvenidas'),
-        ('book-fotos', 'Book de Fotos'),
-        ('utilidades', 'Utilidades'),
-        ('variados', 'Variados'),
-        ('modelo-prompt', 'Modelo de Prompt'),
-    ]
-    categoria = models.CharField(
-        max_length=50, 
-        choices=CATEGORIA_CHOICES, 
-        default='variados',
+    categoria = models.ForeignKey(
+        'PromptCategoria',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='prompts',
         verbose_name="Categoría"
     )
     titulo = models.CharField(max_length=255)

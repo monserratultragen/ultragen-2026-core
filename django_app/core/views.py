@@ -10,7 +10,7 @@ from .models import (
     Presentacion, Slide, Tablero, RecuerdoLeticia, InstagramPerfil, InstagramPost,
     MercadoUmbralNoticia, MercadoUmbralCompra, MercadoUmbralCyborg, MercadoUmbralHumano,
     MercadoUmbralHumanoImagen, Bienvenida, LibroVisitas, Seguridad, Desktop, Susurro, ClaveAcceso,
-    PromptAI, ImagenAIBase, CapituloPrompt, Visita
+    PromptAI, ImagenAIBase, CapituloPrompt, Visita, PromptCategoria
 )
 from .utils_geo import get_geo_info
 from .serializers import (
@@ -23,7 +23,8 @@ from .serializers import (
     MercadoUmbralNoticiaSerializer, MercadoUmbralCompraSerializer,
     MercadoUmbralCyborgSerializer, MercadoUmbralHumanoSerializer,
     MercadoUmbralHumanoImagenSerializer, BienvenidaSerializer, LibroVisitasSerializer, SeguridadSerializer, DesktopSerializer, SusurroSerializer, ClaveAccesoSerializer,
-    PromptAISerializer, ImagenAIBaseSerializer, CapituloPromptSerializer, VisitaSerializer
+    PromptAISerializer, ImagenAIBaseSerializer, CapituloPromptSerializer, VisitaSerializer,
+    PromptCategoriaSerializer
 )
 
 class SeguridadViewSet(viewsets.ModelViewSet):
@@ -55,7 +56,7 @@ class SeguridadViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def verify_response(self, request, pk=None):
-        """Verifies the 'sena' (response) for a given challenge ID."""
+        """Verifies the 'sena' (response) for a given challenge ID, or checks for a Master/VIP access key."""
         obj = self.get_object()
         user_response = request.data.get('sena', '').strip()
         
@@ -76,12 +77,41 @@ class SeguridadViewSet(viewsets.ModelViewSet):
             return text
 
         normalized_input = normalize_text(user_response)
+        
+        # 1. Check if it's a valid Master or VIP Access Key
+        try:
+            # We check the raw input against stored keys (iexact handles case, but normalize handles more)
+            # Actually, standardizing keys might be safer. Let's try matching raw input first.
+            access_key = ClaveAcceso.objects.get(clave__iexact=user_response)
+            if access_key.esta_valida():
+                response_data = {
+                    "status": "correct", 
+                    "message": "Acceso concedido",
+                    "access_type": access_key.tipo,
+                    "access_name": access_key.nombre
+                }
+                if access_key.tipo == 'vip':
+                    response_data["fecha_inicio"] = access_key.fecha_inicio.isoformat() if access_key.fecha_inicio else None
+                    response_data["fecha_fin"] = access_key.fecha_fin.isoformat() if access_key.fecha_fin else None
+                
+                return Response(response_data)
+        except ClaveAcceso.DoesNotExist:
+            pass # Continue to standard validation
+
+        # 2. Standard validation (Santo/Seña)
         normalized_stored = normalize_text(obj.sena)
 
         if normalized_input == normalized_stored:
-            return Response({"status": "correct", "message": "Acceso concedido"})
+            return Response({
+                "status": "correct", 
+                "message": "Acceso concedido",
+                "access_type": "standard"
+            })
         else:
-            return Response({"status": "incorrect", "message": "Respuesta incorrecta"}, status=status.HTTP_403_FORBIDDEN)
+            return Response({
+                "status": "incorrect", 
+                "message": "Respuesta incorrecta"
+            }, status=status.HTTP_403_FORBIDDEN)
 
 class DesktopViewSet(viewsets.ModelViewSet):
     queryset = Desktop.objects.all()
@@ -519,6 +549,12 @@ class ClaveAccesoViewSet(viewsets.ReadOnlyModelViewSet):
                 'status': 'invalida',
                 'mensaje': 'Clave incorrecta'
             }, status=status.HTTP_404_NOT_FOUND)
+
+class PromptCategoriaViewSet(viewsets.ModelViewSet):
+    queryset = PromptCategoria.objects.all()
+    serializer_class = PromptCategoriaSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['id', 'nombre']
 
 class PromptAIViewSet(viewsets.ModelViewSet):
     queryset = PromptAI.objects.all()

@@ -4,22 +4,18 @@ import Modal from '../components/Modal';
 
 function PromptAIManager() {
     const [items, setItems] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
-    const [form, setForm] = useState({ titulo: '', prompt: '', notas: '', categoria: 'variados' });
-
-    const CATEGORIAS = [
-        { id: 'perfil-sl', label: 'Perfil SL' },
-        { id: 'personajes', label: 'Personajes' },
-        { id: 'bienvenidas', label: 'Bienvenidas' },
-        { id: 'book-fotos', label: 'Book de Fotos' },
-        { id: 'utilidades', label: 'Utilidades' },
-        { id: 'variados', label: 'Variados' },
-        { id: 'modelo-prompt', label: 'Modelo de Prompt' },
-    ];
+    const [form, setForm] = useState({ titulo: '', prompt: '', notas: '', categoria: '' });
+    
+    // UI state for adding new category
+    const [isAddingCategory, setIsAddingCategory] = useState(false);
+    const [newCategoryName, setNewCategoryName] = useState('');
 
     useEffect(() => {
         fetchItems();
+        fetchCategories();
     }, []);
 
     const fetchItems = () => {
@@ -28,18 +24,36 @@ function PromptAIManager() {
             .catch(err => console.error(err));
     };
 
+    const fetchCategories = () => {
+        api.get('/prompt-categorias/')
+            .then(res => {
+                setCategories(res.data);
+                if (res.data.length > 0 && !form.categoria) {
+                    setForm(prev => ({ ...prev, categoria: res.data[0].id }));
+                }
+            })
+            .catch(err => console.error(err));
+    };
+
     const handleOpenModal = (item = null) => {
+        setIsAddingCategory(false);
+        setNewCategoryName('');
         if (item) {
             setEditingId(item.id);
             setForm({
                 titulo: item.titulo,
                 prompt: item.prompt,
                 notas: item.notas || '',
-                categoria: item.categoria || 'variados'
+                categoria: item.categoria || (categories.length > 0 ? categories[0].id : '')
             });
         } else {
             setEditingId(null);
-            setForm({ titulo: '', prompt: '', notas: '', categoria: 'variados' });
+            setForm({ 
+                titulo: '', 
+                prompt: '', 
+                notas: '', 
+                categoria: categories.length > 0 ? categories[0].id : '' 
+            });
         }
         setIsModalOpen(true);
     };
@@ -59,15 +73,26 @@ function PromptAIManager() {
         });
     };
 
+    const handleAddCategory = () => {
+        if (!newCategoryName.trim()) return;
+        
+        api.post('/prompt-categorias/', { nombre: newCategoryName })
+            .then(res => {
+                setCategories([...categories, res.data]);
+                setForm({ ...form, categoria: res.data.id });
+                setIsAddingCategory(false);
+                setNewCategoryName('');
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Error al crear categoría: " + (err.response?.data?.detail || err.message));
+            });
+    };
+
     const handleDelete = (id) => {
         if (window.confirm("¿Eliminar este prompt?")) {
             api.delete(`/prompts-ai/${id}/`).then(fetchItems);
         }
-    };
-
-    const getCategoryLabel = (catId) => {
-        const cat = CATEGORIAS.find(c => c.id === catId);
-        return cat ? cat.label : catId;
     };
 
     return (
@@ -97,7 +122,7 @@ function PromptAIManager() {
                                     <td>{item.titulo}</td>
                                     <td>
                                         <span className="badge" style={{ fontSize: '0.75rem', backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                                            {getCategoryLabel(item.categoria)}
+                                            {item.categoria_nombre || 'Sin categoría'}
                                         </span>
                                     </td>
                                     <td style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -148,17 +173,43 @@ function PromptAIManager() {
                             />
                         </div>
                         <div className="form-group">
-                            <label>Categoría</label>
-                            <select
-                                value={form.categoria}
-                                onChange={e => setForm({ ...form, categoria: e.target.value })}
-                                required
-                                style={{ width: '100%', padding: '8px', borderRadius: '4px', backgroundColor: '#222', color: '#fff', border: '1px solid #444' }}
-                            >
-                                {CATEGORIAS.map(cat => (
-                                    <option key={cat.id} value={cat.id}>{cat.label}</option>
-                                ))}
-                            </select>
+                            <label style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                Categoría
+                                {!isAddingCategory && (
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setIsAddingCategory(true)}
+                                        style={{ background: 'none', border: 'none', color: '#4a9eff', cursor: 'pointer', fontSize: '0.8rem' }}
+                                    >
+                                        + Nueva Categoría
+                                    </button>
+                                )}
+                            </label>
+                            
+                            {isAddingCategory ? (
+                                <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
+                                    <input
+                                        type="text"
+                                        placeholder="Nombre de la categoría..."
+                                        value={newCategoryName}
+                                        onChange={e => setNewCategoryName(e.target.value)}
+                                        style={{ flex: 1 }}
+                                    />
+                                    <button type="button" className="btn btn-sm btn-primary" onClick={handleAddCategory}>OK</button>
+                                    <button type="button" className="btn btn-sm btn-outline" onClick={() => setIsAddingCategory(false)}>X</button>
+                                </div>
+                            ) : (
+                                <select
+                                    value={form.categoria}
+                                    onChange={e => setForm({ ...form, categoria: e.target.value })}
+                                    required
+                                    style={{ width: '100%', padding: '8px', borderRadius: '4px', backgroundColor: '#222', color: '#fff', border: '1px solid #444' }}
+                                >
+                                    {categories.map(cat => (
+                                        <option key={cat.id} value={cat.id}>{cat.nombre}</option>
+                                    ))}
+                                </select>
+                            )}
                         </div>
                         <div className="form-group">
                             <label>Prompt (Texto Copiado)</label>
@@ -177,7 +228,7 @@ function PromptAIManager() {
                                 rows="3"
                             />
                         </div>
-                        <button type="submit" className="btn btn-primary">Guardar</button>
+                        <button type="submit" className="btn btn-primary" disabled={isAddingCategory}>Guardar</button>
                     </form>
                 </Modal>
             </div>

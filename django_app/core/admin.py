@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     Seguridad, Diario, Tomo, Capitulo, Susurro, ClaveAcceso,
-    PromptAI, CapituloPrompt, ImagenAIBase, Visita
+    PromptAI, CapituloPrompt, ImagenAIBase, Visita, PromptCategoria
 )
 
 @admin.register(Seguridad)
@@ -38,6 +38,11 @@ class ClaveAccesoAdmin(admin.ModelAdmin):
     list_editable = ('is_active',)
     list_filter = ('tipo', 'is_active')
     search_fields = ('nombre', 'clave')
+@admin.register(PromptCategoria)
+class PromptCategoriaAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'slug', 'is_active')
+    search_fields = ('nombre', 'slug')
+
 @admin.register(PromptAI)
 class PromptAIAdmin(admin.ModelAdmin):
     list_display = ('titulo', 'categoria', 'is_active')
