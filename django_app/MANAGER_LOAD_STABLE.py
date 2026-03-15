@@ -23,8 +23,8 @@ def load_stable(filename):
     load_order = [
         'core.diario', 'core.tomo', 'core.capitulo', 'core.personaje',
         'core.expediente', 'core.tablero', 'core.recuerdoleticia',
-        'core.promptai', 'core.capituloimagen', 'core.capituloslap',
-        'core.capitulopista', 'core.capituloprompt'
+        'core.promptcategoria', 'core.promptai', 'core.capituloimagen', 
+        'core.capituloslap', 'core.capitulopista', 'core.capituloprompt'
     ]
     
     # Agregar el resto de modelos que no estén en la lista
