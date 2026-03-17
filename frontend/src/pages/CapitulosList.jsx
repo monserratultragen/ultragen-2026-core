@@ -15,7 +15,8 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
         romance: false, risas: false, lagrimas: false, violencia: false,
         peligro: false, armas: false, sexo: false, eventos: false,
         es_demo: true, is_vip: false,
-        is_active: true
+        is_active: true,
+        play_voz: 'M'
     });
     const [imagen, setImagen] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,7 +35,8 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
                 romance: cap.romance, risas: cap.risas, lagrimas: cap.lagrimas, violencia: cap.violencia,
                 peligro: cap.peligro, armas: cap.armas, sexo: cap.sexo, eventos: cap.eventos,
                 es_demo: cap.es_demo, is_vip: cap.is_vip,
-                is_active: cap.is_active
+                is_active: cap.is_active,
+                play_voz: cap.play_voz || 'M'
             });
         } else {
             setEditingId(null);
@@ -49,7 +51,8 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
                 romance: false, risas: false, lagrimas: false, violencia: false,
                 peligro: false, armas: false, sexo: false, eventos: false,
                 es_demo: true, is_vip: false,
-                is_active: true
+                is_active: true,
+                play_voz: 'M'
             });
         }
         setImagen(null);
@@ -66,7 +69,8 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
             romance: false, risas: false, lagrimas: false, violencia: false,
             peligro: false, armas: false, sexo: false, eventos: false,
             es_demo: true, is_vip: false,
-            is_active: true
+            is_active: true,
+            play_voz: 'M'
         });
         setImagen(null);
     };
@@ -315,10 +319,18 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
                         />
                     </div>
 
-                    <div className="grid" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+                    <div className="grid" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
                         <input type="text" placeholder="País" value={newCapitulo.pais} onChange={e => setNewCapitulo({ ...newCapitulo, pais: e.target.value })} />
                         <input type="text" placeholder="Ciudad" value={newCapitulo.ciudad} onChange={e => setNewCapitulo({ ...newCapitulo, ciudad: e.target.value })} />
                         <input type="text" placeholder="Año" value={newCapitulo.anio} onChange={e => setNewCapitulo({ ...newCapitulo, anio: e.target.value })} />
+                        <select
+                            value={newCapitulo.play_voz}
+                            onChange={e => setNewCapitulo({ ...newCapitulo, play_voz: e.target.value })}
+                            title="Voz Predeterminada"
+                        >
+                            <option value="M">Voz: M</option>
+                            <option value="F">Voz: F</option>
+                        </select>
                     </div>
 
                     <textarea

@@ -12,6 +12,7 @@ def load_stable(filename):
     manage_py = os.path.join(os.path.dirname(__file__), 'manage.py')
 
     print(f"--> Intentando carga completa de {filename}...")
+    sys.stdout.flush()
     
     # Intento 1: Carga completa (Más rápido pero puede fallar en DBs muy grandes)
     try:
@@ -19,12 +20,15 @@ def load_stable(filename):
         if res.returncode == 0:
             print(f"¡ÉXITO! Carga completa finalizada.")
             print(res.stdout.strip())
+            sys.stdout.flush()
             return True
         else:
             print("Carga completa falló (posible límite de Neon). Intentando carga por bloques...")
             print(f"Error detectado: {res.stderr[:200]}...")
+            sys.stdout.flush()
     except Exception as e:
         print(f"Error en intento de carga completa: {e}")
+        sys.stdout.flush()
 
     # Intento 2: Carga por bloques agrupados (Optimizado)
     with open(filename, 'r', encoding='utf-8') as f:
@@ -52,7 +56,9 @@ def load_stable(filename):
     success = True
     # Agrupamos en bloques de 3 modelos para reducir conexiones de red
     chunk_size = 3
-    for i in range(0, len(load_order), chunk_size):
+    num_batches = (len(load_order) + chunk_size - 1) // chunk_size
+    
+    for idx, i in enumerate(range(0, len(load_order), chunk_size)):
         batch = load_order[i:i + chunk_size]
         items_to_load = []
         models_in_batch = []
@@ -69,14 +75,15 @@ def load_stable(filename):
         with open(tmp_file, 'w', encoding='utf-8') as f:
             json.dump(items_to_load, f, ensure_ascii=False)
             
-        print(f"--> Cargando bloque: {', '.join(models_in_batch)} ({len(items_to_load)} objetos)...")
+        print(f"--> [{idx+1}/{num_batches}] Cargando bloque: {', '.join(models_in_batch)} ({len(items_to_load)} objetos)...")
+        sys.stdout.flush()
         try:
             res = subprocess.run([python_exe, manage_py, 'loaddata', tmp_file], capture_output=True, text=True, encoding='utf-8')
             if res.returncode != 0:
                 print(f"ERROR en bloque {batch}: {res.stderr}")
-                success = False
             else:
                 print(f"OK: {res.stdout.strip()}")
+            sys.stdout.flush()
         finally:
             if os.path.exists(tmp_file):
                 os.remove(tmp_file)

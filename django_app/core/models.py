@@ -60,6 +60,17 @@ class Capitulo(AuditModel):
     is_vip = models.BooleanField(default=False)
     palabras = models.IntegerField(default=0, help_text="Contador de palabras del capítulo")
 
+    VOZ_CHOICES = [
+        ('M', 'Masculino'),
+        ('F', 'Femenino'),
+    ]
+    play_voz = models.CharField(
+        max_length=1,
+        choices=VOZ_CHOICES,
+        default='M',
+        help_text="Voz predeterminada para el capítulo (M o F)"
+    )
+
     class Meta:
         ordering = ['orden']
 
@@ -375,6 +386,17 @@ class ClaveAcceso(AuditModel):
     # Control de tiempo
     fecha_inicio = models.DateTimeField(null=True, blank=True)
     fecha_fin = models.DateTimeField(null=True, blank=True)
+    
+    VOZ_CHOICES = [
+        ('M', 'Masculino'),
+        ('F', 'Femenino'),
+    ]
+    play_voz = models.CharField(
+        max_length=1,
+        choices=VOZ_CHOICES,
+        default='F',
+        help_text="Preferencia de voz (M o F)"
+    )
     
     class Meta:
         verbose_name = "Clave de Acceso"

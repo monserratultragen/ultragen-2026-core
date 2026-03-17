@@ -16,8 +16,7 @@ function CapituloWriter() {
     const [isSaving, setIsSaving] = useState(false);
     const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [isUploadingSlap, setIsUploadingSlap] = useState(false);
-    const textareaRef = useRef(null);
-    const lineNumbersRef = useRef(null);
+    const [playVoz, setPlayVoz] = useState('M');
     // ... existing states ...
     const [activeTab, setActiveTab] = useState('imagenes'); // 'imagenes', 'slaps', 'pistas'
     const [viewImage, setViewImage] = useState(null);
@@ -50,6 +49,7 @@ function CapituloWriter() {
             .then(res => {
                 setCapitulo(res.data);
                 setContenido(res.data.contenido || '');
+                setPlayVoz(res.data.play_voz || 'M');
                 setLoading(false);
             })
             .catch(err => console.error(err));
@@ -98,8 +98,9 @@ function CapituloWriter() {
         setIsSaving(true);
 
         const palabras = countWords(contenido);
+        const play_voz = playVoz;
 
-        api.patch(`/capitulos/${id}/`, { contenido, palabras })
+        api.patch(`/capitulos/${id}/`, { contenido, palabras, play_voz })
             .then(res => {
                 setCapitulo(prev => ({ ...prev, palabras: res.data.palabras }));
                 alert('Guardado correctamente');
@@ -329,7 +330,18 @@ function CapituloWriter() {
                         </span>
                     </h2>
                 </div>
-                <div className="writer-tools">
+                <div className="writer-tools" style={{ display: 'flex', gap: '10px' }}>
+                    <select
+                        value={playVoz}
+                        onChange={e => setPlayVoz(e.target.value)}
+                        className="btn btn-sm btn-outline"
+                        style={{ background: '#1a1a1a', color: '#fff', border: '1px solid #333' }}
+                        title="Voz Predeterminada"
+                    >
+                        <option value="M">Voz: M</option>
+                        <option value="F">Voz: F</option>
+                    </select>
+
                     <label className={`btn btn-sm ${isUploadingImage ? 'btn-disabled' : 'btn-outline'}`} style={{ cursor: isUploadingImage ? 'not-allowed' : 'pointer' }}>
                         {isUploadingImage ? '⌛ Subiendo...' : '📷 Subir Imagen'}
                         <input type="file" hidden onChange={handleImageUpload} accept="image/*" disabled={isUploadingImage} />

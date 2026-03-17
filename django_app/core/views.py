@@ -536,7 +536,8 @@ class ClaveAccesoViewSet(viewsets.ReadOnlyModelViewSet):
                 return Response({
                     'status': 'valida',
                     'tipo': obj.tipo,
-                    'nombre': obj.nombre
+                    'nombre': obj.nombre,
+                    'play_voz': obj.play_voz
                 })
             else:
                 return Response({
