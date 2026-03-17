@@ -1,0 +1,1 @@
+CommandError: Unable to serialize database: 'charmap' codec can't encode character '\u2082' in position 6328: character maps to <undefined>
