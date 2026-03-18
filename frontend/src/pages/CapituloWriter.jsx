@@ -17,6 +17,8 @@ function CapituloWriter() {
     const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [isUploadingSlap, setIsUploadingSlap] = useState(false);
     const [playVoz, setPlayVoz] = useState('M');
+    const textareaRef = useRef(null);
+    const lineNumbersRef = useRef(null);
     // ... existing states ...
     const [activeTab, setActiveTab] = useState('imagenes'); // 'imagenes', 'slaps', 'pistas'
     const [viewImage, setViewImage] = useState(null);
