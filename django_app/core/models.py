@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 
 class AuditModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, help_text="Fecha de creación del registro")
@@ -481,3 +483,33 @@ class Visita(AuditModel):
 
     def __str__(self):
         return f"{self.ip} - {self.pais} ({self.created_at.strftime('%Y-%m-%d %H:%M')})"
+
+# --- Signals for Physical File Cleanup ---
+
+@receiver(post_delete, sender=Capitulo)
+def auto_delete_file_on_delete_capitulo(sender, instance, **kwargs):
+    """Deletes file from storage when corresponding Capitulo object is deleted."""
+    if instance.ruta_img:
+        instance.ruta_img.delete(save=False)
+
+@receiver(post_delete, sender=CapituloImagen)
+def auto_delete_file_on_delete_capitulo_imagen(sender, instance, **kwargs):
+    """Deletes file from storage when corresponding CapituloImagen object is deleted."""
+    if instance.ruta:
+        instance.ruta.delete(save=False)
+
+@receiver(post_delete, sender=CapituloSlap)
+def auto_delete_file_on_delete_capitulo_slap(sender, instance, **kwargs):
+    """Deletes file from storage when corresponding CapituloSlap object is deleted."""
+    if instance.ruta:
+        instance.ruta.delete(save=False)
+
+@receiver(post_delete, sender=Diario)
+def auto_delete_file_on_delete_diario(sender, instance, **kwargs):
+    if instance.ruta_img:
+        instance.ruta_img.delete(save=False)
+
+@receiver(post_delete, sender=Tomo)
+def auto_delete_file_on_delete_tomo(sender, instance, **kwargs):
+    if instance.ruta_img:
+        instance.ruta_img.delete(save=False)

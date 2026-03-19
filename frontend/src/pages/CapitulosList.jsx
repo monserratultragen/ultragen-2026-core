@@ -142,6 +142,19 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
                 if (onRefresh) onRefresh();
             });
     };
+    
+    const handleDeleteCapitulo = (capId) => {
+        if (!window.confirm("¿Estás seguro de eliminar este capítulo? Se eliminarán también todas sus imágenes, slaps y pistas asociadas.")) return;
+        
+        api.delete(`/capitulos/${capId}/`)
+            .then(() => {
+                if (onRefresh) onRefresh();
+            })
+            .catch(err => {
+                console.error("Delete failed", err);
+                alert("Error al eliminar capítulo");
+            });
+    };
 
     const getTomoLabel = (tomo) => {
         const diario = diarios.find(d => d.id == tomo.diario);
@@ -270,6 +283,14 @@ function CapitulosList({ selectedTomoId, onRefresh, capitulos, tomos, diarios })
                                         title="Bajar"
                                     >
                                         <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
+                                    </button>
+                                    <button
+                                        className="action-btn"
+                                        onClick={(e) => { e.stopPropagation(); handleDeleteCapitulo(cap.id); }}
+                                        title="Eliminar"
+                                        style={{ color: '#ff4444' }}
+                                    >
+                                        <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
                                     </button>
                                 </td>
                             </tr>

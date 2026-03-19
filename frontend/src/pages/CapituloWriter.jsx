@@ -116,6 +116,28 @@ function CapituloWriter() {
             });
     };
 
+    const handleDelete = () => {
+        if (!window.confirm("¿Estás seguro de eliminar este capítulo? Se perderá todo el contenido y archivos asociados.")) return;
+        
+        setIsSaving(true);
+        api.delete(`/capitulos/${id}/`)
+            .then(() => {
+                navigate('/diarios-main', {
+                    state: {
+                        activeTab: 'capitulos',
+                        selectedDiarioId: capitulo?.diario_id,
+                        selectedTomoId: capitulo?.tomo,
+                        expandedDiarios: { [capitulo?.diario_id]: true }
+                    }
+                });
+            })
+            .catch(err => {
+                console.error("Delete failed", err);
+                alert("Error al eliminar capítulo");
+                setIsSaving(false);
+            });
+    };
+
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
         if (!file || isUploadingImage) return;
@@ -358,6 +380,9 @@ function CapituloWriter() {
                             expandedDiarios: { [capitulo?.diario_id]: true }
                         }
                     })}>Volver</button>
+                    <button className="btn btn-danger" onClick={handleDelete} disabled={isSaving} style={{ marginLeft: '10px', background: '#e74c3c', borderColor: '#c0392b' }}>
+                        {isSaving ? '⌛ Eliminar...' : 'Eliminar Capítulo'}
+                    </button>
                     <button className="btn btn-primary" onClick={handleSave} disabled={isSaving} style={{ marginLeft: '10px' }}>
                         {isSaving ? '⌛ Guardando...' : 'Guardar'}
                     </button>
