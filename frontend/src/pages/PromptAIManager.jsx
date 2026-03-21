@@ -13,6 +13,10 @@ function PromptAIManager() {
     const [isAddingCategory, setIsAddingCategory] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
 
+    // Filter states
+    const [filterTitulo, setFilterTitulo] = useState('');
+    const [filterCategoria, setFilterCategoria] = useState('');
+
     useEffect(() => {
         fetchItems();
         fetchCategories();
@@ -95,6 +99,12 @@ function PromptAIManager() {
         }
     };
 
+    const filteredItems = items.filter(item => {
+        const matchesTitulo = item.titulo.toLowerCase().includes(filterTitulo.toLowerCase());
+        const matchesCategoria = !filterCategoria || item.categoria == filterCategoria;
+        return matchesTitulo && matchesCategoria;
+    });
+
     return (
         <div className="page-container">
             <div className="content-area">
@@ -107,16 +117,45 @@ function PromptAIManager() {
                     <table className="table">
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th style={{ width: '50px' }}>ID</th>
                                 <th>Título</th>
                                 <th>Categoría</th>
                                 <th>Prompt</th>
                                 <th>Notas</th>
-                                <th>Acciones</th>
+                                <th style={{ width: '220px' }}>Acciones</th>
+                            </tr>
+                            <tr className="filter-row" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                                <td></td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        placeholder="Filtrar por título..."
+                                        value={filterTitulo}
+                                        onChange={e => setFilterTitulo(e.target.value)}
+                                        className="form-control btn-sm"
+                                        style={{ width: '100%', padding: '4px 8px', fontSize: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff' }}
+                                    />
+                                </td>
+                                <td>
+                                    <select
+                                        value={filterCategoria}
+                                        onChange={e => setFilterCategoria(e.target.value)}
+                                        className="form-control btn-sm"
+                                        style={{ width: '100%', padding: '4px 8px', fontSize: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff' }}
+                                    >
+                                        <option value="">Todas</option>
+                                        {categories.map(cat => (
+                                            <option key={cat.id} value={cat.id}>{cat.nombre}</option>
+                                        ))}
+                                    </select>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr>
                         </thead>
                         <tbody>
-                            {items.map(item => (
+                            {filteredItems.map(item => (
                                 <tr key={item.id}>
                                     <td>{item.id}</td>
                                     <td>{item.titulo}</td>
@@ -150,10 +189,10 @@ function PromptAIManager() {
                                     </td>
                                 </tr>
                             ))}
-                            {items.length === 0 && (
+                            {filteredItems.length === 0 && (
                                 <tr>
                                     <td colSpan="6" style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-                                        No hay prompts registrados.
+                                        {items.length === 0 ? "No hay prompts registrados." : "No hay prompts que coincidan con los filtros."}
                                     </td>
                                 </tr>
                             )}
